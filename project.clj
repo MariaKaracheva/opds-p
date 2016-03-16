@@ -13,6 +13,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
+                 [org.apache.httpcomponents/httpclient "4.5.2"]
                  ]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler hello-world.core/handler}
