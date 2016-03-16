@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: puppetlabs/ssl-utils:0.8.1">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/puppetlabs/ssl-utils/0.8.1/ssl-utils-0.8.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

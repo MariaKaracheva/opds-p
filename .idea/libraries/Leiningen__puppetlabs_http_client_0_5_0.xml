@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: puppetlabs/http-client:0.5.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/puppetlabs/http-client/0.5.0/http-client-0.5.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

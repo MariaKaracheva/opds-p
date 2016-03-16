@@ -12,7 +12,8 @@
   :description "FIXME: write"
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-core "1.4.0"]
-                 [ring/ring-jetty-adapter "1.4.0"]]
+                 [ring/ring-jetty-adapter "1.4.0"]
+                 ]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler hello-world.core/handler}
   )
