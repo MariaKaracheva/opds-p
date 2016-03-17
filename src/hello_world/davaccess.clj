@@ -1,5 +1,5 @@
 (ns hello-world.davaccess
-  (:import (org.apache.http.impl.client BasicResponseHandler HttpClients BasicCredentialsProvider HttpClientBuilder BasicAuthCache)
+  (:import (org.apache.http.impl.client BasicResponseHandler HttpClients BasicCredentialsProvider HttpClientBuilder BasicAuthCache LaxRedirectStrategy)
            (java.net URI)
            (org.apache.http.client.methods HttpRequestBase)
            (org.apache.http.auth AuthScope UsernamePasswordCredentials)
@@ -8,19 +8,9 @@
            (org.apache.http.impl.auth BasicScheme)))
 
 
-;// Create AuthCache instance
-;AuthCache authCache = new BasicAuthCache();
-;// Generate BASIC scheme object and add it to the local
-;// auth cache
-;BasicScheme basicAuth = new BasicScheme();
-;authCache.put(target, basicAuth);
-;
-;// Add AuthCache to the execution context
-;HttpClientContext localContext = HttpClientContext.create();
-;localContext.setAuthCache(authCache);
-(def localkontext  (doto (HttpClientContext/create)
-                       (.setAuthCache (doto (BasicAuthCache.)
-                                        (.put (HttpHost. "localhost" 7000) (BasicScheme.))))))
+(defn basicContextFor [^String host ^Integer port] (doto (HttpClientContext/create)
+                                                  (.setAuthCache (doto (BasicAuthCache.)
+                                                                   (.put (HttpHost. host port) (BasicScheme.))))))
 
 (defn PROPFIND [url] (doto (proxy [HttpRequestBase] []
                      (getMethod
@@ -33,15 +23,17 @@
 ;                                    new UsernamePasswordCredentials("username", "password"));
 
 (defn loadList [path] (
-                        with-open [client (.build (.setDefaultCredentialsProvider (HttpClientBuilder/create)
-                                                                           (doto (BasicCredentialsProvider.)
-                                                                             (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "username", "password")))))  ]
+                        with-open [client (.build (doto (HttpClientBuilder/create)
+                                                    (.setDefaultCredentialsProvider (doto (BasicCredentialsProvider.)
+                                                                                      (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "login", "password"))))
+                                                    ;(.setRedirectStrategy (LaxRedirectStrategy.))
+                                                    ))]
                         ( let [
                               ;url  (HttpGet. "http://localhost:7000/")
                               ;url  (HttpGet. "http://localhost:7000/")
                               ;get  (HttpGet.  "http://uits-labs.ru/")
-                              get (doto (PROPFIND "http://localhost:7000/")
+                               get (doto (PROPFIND "https://webdav.yandex.ru/")
                                     (.addHeader "Depth" "1" )
                                     (.addHeader "Accept", "*/*" ))
                               ]
-                         (.execute client get (BasicResponseHandler.) localkontext))) )
+                          (.execute client get (BasicResponseHandler.) (basicContextFor "webdav.yandex.ru" 443)))))
