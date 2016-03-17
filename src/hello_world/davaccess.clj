@@ -7,10 +7,16 @@
            (org.apache.http HttpHost)
            (org.apache.http.impl.auth BasicScheme)))
 
+(require ['lock-key.core :refer ['decrypt 'decrypt-as-str 'decrypt-from-base64 ] ])
+
 
 (defn basicContextFor [^String host ^Integer port] (doto (HttpClientContext/create)
                                                   (.setAuthCache (doto (BasicAuthCache.)
                                                                    (.put (HttpHost. host port) (BasicScheme.))))))
+
+(def key (let [file  (clojure.string/join "/" [(java.lang.System/getenv "HOME") ".opds-p" "key"])]
+           (decrypt-from-base64 (slurp file)  "9qPBq1kFkOfPy5w9")
+           ))
 
 (defn PROPFIND [url] (doto (proxy [HttpRequestBase] []
                      (getMethod
@@ -24,8 +30,8 @@
 
 (defn loadList [path] (
                         with-open [client (.build (doto (HttpClientBuilder/create)
-                                                    (.setDefaultCredentialsProvider (doto (BasicCredentialsProvider.)
-                                                                                      (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "login", "password"))))
+                                                    ;(.setDefaultCredentialsProvider (doto (BasicCredentialsProvider.)
+                                                    ;                                  (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "lkuka", "Ap7phei:x"))))
                                                     ;(.setRedirectStrategy (LaxRedirectStrategy.))
                                                     ))]
                         ( let [
@@ -34,6 +40,8 @@
                               ;get  (HttpGet.  "http://uits-labs.ru/")
                                get (doto (PROPFIND "https://webdav.yandex.ru/")
                                     (.addHeader "Depth" "1" )
-                                    (.addHeader "Accept", "*/*" ))
+                                    (.addHeader "Accept", "*/*" )
+                                    (.addHeader "Authorization" (str "OAuth " key) )
+                                    )
                               ]
-                          (.execute client get (BasicResponseHandler.) (basicContextFor "webdav.yandex.ru" 443)))))
+                          (.execute client get (BasicResponseHandler.) ))))
