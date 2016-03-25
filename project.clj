@@ -15,6 +15,7 @@
                  [ring/ring-jetty-adapter "1.4.0"]
                  [org.apache.httpcomponents/httpclient "4.5.2"]
                  [lock-key "1.4.1"]
+                 [com.github.kyleburton/clj-xpath "1.4.5"]
                  ]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler hello-world.core/handler}

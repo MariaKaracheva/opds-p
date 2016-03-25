@@ -1,28 +1,37 @@
 (ns hello-world.core
   (:require [ring.util.response :refer [response content-type]])
-  (:require [hello-world.davaccess :as davaccess])
-)
+  (:require [hello-world.davaccess :as davaccess]
+            [clojure.string :as string]
+            [clj-xpath.core :as xp]
+            )
+  )
 
 
-;(defn loadList [path] (let [
-;                            url  (URL.  "http://localhost:7000/")
-;                            ;url  (URL.  "http://uits-labs.ru/")
-;                            conn (cast HttpURLConnection (.openConnection url))
-;                            ]
-;                        (do
-;                          (.setRequestMethod conn "PROPFIND")
-;                            (slurp (.getInputStream conn)))))
-
-
-
+(defn respEntry [respnode]
+  {
+   :href        (xp/$x:text "./href" respnode)
+   :displayname (xp/$x:text "./propstat/prop/displayname" respnode)
+   :collection  (not (nil? (xp/$x:tag? "./propstat/prop/resourcetype/collection" respnode)))
+   })
 
 
 (defn handler [request]
   {:status  200
-   :headers {"Content-Type" "text/plain; charset=utf-8"}
-   :body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList "" ))})
+   :headers {"Content-Type" "text/xml; charset=utf-8"}
+   ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
+   ;:body    (let [davxml (slurp "yandex.xml") parsed (xp/$x "*//prop" davxml)]
+   ;           (string/join "\n" (->> parsed
+   ;                                  (map #(:node %))
+   ;                                  (map #(xp/$x:text "./displayname" %))
+   ;                                  ;(map #(apply :text %))
+   ;                                  )))
+   :body    (let [davxml (slurp "yandex.xml")
+                  parsed (xp/$x "*//response" davxml)]
+              (string/join "\n" (->> parsed
+                                     (map respEntry)
+                                     ;(map #(xp/$x:text "./displayname" %))
+                                     ;(map #(apply :text %))
+                                     )))
+   })
 
-;(defn handler [request]
-;  (-> (response "Hello World6")
-;      (content-type "text/plain")))
 
