@@ -1,5 +1,5 @@
 (ns hello-world.opds
-  (:require [clojure.xml :as xml]))
+  (:require [clojure.data.xml :refer [element]]))
 
 ;<feed xmlns="http://www.w3.org/2005/Atom" xmlns:dcterms="http://purl.org/dc/terms/"
 ;xmlns:pse="http://vaemendis.net/opds-pse/ns" xmlns:opds="http://opds-spec.org/2010/catalog" xml:lang="en"
@@ -16,22 +16,22 @@
 ;<link type="application/atom+xml; profile=opds-catalog; kind=navigation" rel="start" href="/opds-books/"/>
 
 (defn entryTagData [entry]
-  {:tag "entry" :content
-        [
-         {:tag "title" :content [(entry :displayname)]}
-         {:tag "content" :attrs {:type "html"}}
-         {:tag "link" :attrs
-               {:type "application/atom+xml; profile=opds-catalog; kind=acquisition"
-                :kind "acquisition"
-                :rel  "subsection"
-                :href (entry :href)
-                }
-          }]})
+  (element "entry" {}
+
+           (element "title" {} (entry :displayname))
+           (element "content" {:type "html"})
+           (element "link"
+                    {:type "application/atom+xml; profile=opds-catalog; kind=acquisition"
+                     :kind "acquisition"
+                     :rel  "subsection"
+                     :href (entry :href)
+                     }
+                    )))
 
 (defn documentTagData [entries]
-  {
-   :tag     "feed"
-   :attrs
+  (
+    element "feed"
+
             {
              :xmlns            "http://www.w3.org/2005/Atom"
              :xmlns:dcterms    "http://purl.org/dc/terms/"
@@ -40,9 +40,9 @@
              :xml:lang         "en"
              :xmlns:opensearch "http://a9.com/-/spec/opensearch/1.1/"
              }
-   :content (concat [{:tag "title" :content ["Books - 11 items"]}]
+            (concat [(element "title" {} "Books - 11 items")]
                     (map entryTagData entries)
                     )
-   })
+            ))
 
 

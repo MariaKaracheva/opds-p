@@ -2,7 +2,7 @@
   (:require [ring.util.response :refer [response content-type]])
   (:require [hello-world.davaccess :as davaccess]
             [clojure.string :as string]
-            [clojure.xml :as xml]
+            [clojure.data.xml :as xml]
             [clj-xpath.core :as xp]
             [hello-world.opds :as opds]
             )
@@ -29,9 +29,9 @@
    ;                                  )))
    :body    (let [davxml (slurp "yandex.xml")
                   parsed (xp/$x "*//response" davxml)]
-              (with-out-str (xml/emit (opds/documentTagData (->> parsed
-                                     (map respEntry)
-                                     )))))
+              (xml/emit-str (opds/documentTagData (->> parsed
+                                                       (map respEntry)
+                                                       ))))
    })
 
 
