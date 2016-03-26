@@ -18,20 +18,23 @@
 
 
 (defn handler [request]
-  {:status  200
-   :headers {"Content-Type" "text/xml; charset=utf-8"}
-   ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
-   ;:body    (let [davxml (slurp "yandex.xml") parsed (xp/$x "*//prop" davxml)]
-   ;           (string/join "\n" (->> parsed
-   ;                                  (map #(:node %))
-   ;                                  (map #(xp/$x:text "./displayname" %))
-   ;                                  ;(map #(apply :text %))
-   ;                                  )))
-   :body    (let [davxml (slurp "yandex.xml")
-                  parsed (xp/$x "*//response" davxml)]
-              (xml/emit-str (opds/documentTagData (->> parsed
-                                                       (map respEntry)
-                                                       ))))
-   })
+  (do (println (:uri request))
+      {:status  200
+       :headers {"Content-Type" "text/xml; charset=utf-8"}
+       ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
+       ;:body    (let [davxml (slurp "yandex.xml") parsed (xp/$x "*//prop" davxml)]
+       ;           (string/join "\n" (->> parsed
+       ;                                  (map #(:node %))
+       ;                                  (map #(xp/$x:text "./displayname" %))
+       ;                                  ;(map #(apply :text %))
+       ;                                  )))
+       :body    (let [
+                      ;davxml (slurp "yandex.xml")
+                      davxml (davaccess/loadList (:uri request))
+                      parsed (xp/$x "*//response" davxml)]
+                  (xml/emit-str (opds/documentTagData (->> parsed
+                                                           (map respEntry)
+                                                           ))))
+       }))
 
 

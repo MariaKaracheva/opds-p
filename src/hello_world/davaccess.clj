@@ -7,21 +7,21 @@
            (org.apache.http HttpHost)
            (org.apache.http.impl.auth BasicScheme)))
 
-(require ['lock-key.core :refer ['decrypt 'decrypt-as-str 'decrypt-from-base64 ] ])
+(require ['lock-key.core :refer ['decrypt 'decrypt-as-str 'decrypt-from-base64]])
 
 
 (defn basicContextFor [^String host ^Integer port] (doto (HttpClientContext/create)
-                                                  (.setAuthCache (doto (BasicAuthCache.)
-                                                                   (.put (HttpHost. host port) (BasicScheme.))))))
+                                                     (.setAuthCache (doto (BasicAuthCache.)
+                                                                      (.put (HttpHost. host port) (BasicScheme.))))))
 
-(def key (let [file  (clojure.string/join "/" [(java.lang.System/getenv "HOME") ".opds-p" "key"])]
-           (decrypt-from-base64 (slurp file)  "9qPBq1kFkOfPy5w9")
+(def key (let [file (clojure.string/join "/" [(java.lang.System/getenv "HOME") ".opds-p" "key"])]
+           (decrypt-from-base64 (slurp file) "9qPBq1kFkOfPy5w9")
            ))
 
 (defn PROPFIND [url] (doto (proxy [HttpRequestBase] []
-                     (getMethod
-                       []
-                       (str "PROPFIND") ) ) (.setURI (URI/create url)) ))
+                             (getMethod
+                               []
+                               (str "PROPFIND"))) (.setURI (URI/create url))))
 
 
 ;CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -34,16 +34,16 @@
                                                     ;                                  (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "lkuka", "Ap7phei:x"))))
                                                     ;(.setRedirectStrategy (LaxRedirectStrategy.))
                                                     ))]
-                        ( let [
+                        (let [
                               ;url  (HttpGet. "http://localhost:7000/")
                               ;url  (HttpGet. "http://localhost:7000/")
                               ;get  (HttpGet.  "http://uits-labs.ru/")
-                               get (doto (PROPFIND "https://webdav.yandex.ru/")
-                                    (.addHeader "Depth" "1" )
-                                    (.addHeader "Accept", "*/*" )
-                                    (.addHeader "Authorization" (str "OAuth " key) )
+                              get (doto (PROPFIND (str "https://webdav.yandex.ru/" path))
+                                    (.addHeader "Depth" "1")
+                                    (.addHeader "Accept", "*/*")
+                                    (.addHeader "Authorization" (str "OAuth " key))
                                     )
                               ]
-                          (.execute client get (BasicResponseHandler.) ))))
+                          (.execute client get (BasicResponseHandler.)))))
 
 (defn filesList [body] ())
