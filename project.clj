@@ -17,6 +17,7 @@
                  [lock-key "1.4.1"]
                  [com.github.kyleburton/clj-xpath "1.4.5"]
                  [org.clojure/data.xml "0.0.8"]
+                 [compojure "1.5.0"]
                  ]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler hello-world.core/handler}

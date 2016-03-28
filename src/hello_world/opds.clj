@@ -15,6 +15,8 @@
 ;<link type="application/atom+xml; profile=opds-catalog; kind=navigation" rel="self" href="/opds-books/1/"/>
 ;<link type="application/atom+xml; profile=opds-catalog; kind=navigation" rel="start" href="/opds-books/"/>
 
+(def ^:dynamic pathPrefix "")
+
 (defn entryTagData [entry]
   (element "entry" {}
 
@@ -24,7 +26,7 @@
                     {:type "application/atom+xml; profile=opds-catalog; kind=acquisition"
                      :kind "acquisition"
                      :rel  "subsection"
-                     :href (entry :href)
+                     :href (str pathPrefix (entry :href))
                      }
                     )))
 

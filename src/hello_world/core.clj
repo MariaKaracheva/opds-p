@@ -5,6 +5,8 @@
             [clojure.data.xml :as xml]
             [clj-xpath.core :as xp]
             [hello-world.opds :as opds]
+            [compojure.core :refer :all]
+            [compojure.route :as route]
             )
   )
 
@@ -17,8 +19,8 @@
    })
 
 
-(defn handler [request]
-  (do (println (:uri request))
+(defn dir [request path]
+  (do (println "uri " (:uri request) path)
       {:status  200
        :headers {"Content-Type" "text/xml; charset=utf-8"}
        ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
@@ -28,13 +30,18 @@
        ;                                  (map #(xp/$x:text "./displayname" %))
        ;                                  ;(map #(apply :text %))
        ;                                  )))
-       :body    (let [
+       :body    (binding [opds/pathPrefix "/dir"]
+                  (let [
                       ;davxml (slurp "yandex.xml")
-                      davxml (davaccess/loadList (:uri request))
+                        davxml (davaccess/loadList path)
                       parsed (xp/$x "*//response" davxml)]
-                  (xml/emit-str (opds/documentTagData (->> parsed
-                                                           (map respEntry)
-                                                           ))))
+                    (xml/emit-str (opds/documentTagData (->> parsed
+                                                             (map respEntry)
+                                                             )))))
        }))
+
+(defroutes handler
+           (GET "/dir/:path{.*}" [path :as request] (dir request path))
+           (route/not-found "<h1>Page not found</h1>"))
 
 
