@@ -1,5 +1,6 @@
 (ns hello-world.opds
-  (:require [clojure.data.xml :refer [element]]))
+  (:require [clojure.data.xml :refer [element]])
+  (:require [clojure.string :refer [ends-with? lower-case]]))
 
 ;<feed xmlns="http://www.w3.org/2005/Atom" xmlns:dcterms="http://purl.org/dc/terms/"
 ;xmlns:pse="http://vaemendis.net/opds-pse/ns" xmlns:opds="http://opds-spec.org/2010/catalog" xml:lang="en"
@@ -17,18 +18,34 @@
 
 (def ^:dynamic pathPrefix "")
 
+(def dirprefix "dir/")
+(def fileprefix "file/")
+
+(defn fileType [filename] (condp #(ends-with? (lower-case %2) %1) filename
+                            ".epub" "application/epub+zip"
+                            ".mobi" "application/x-mobipocket-ebook"
+                            ".pdf" "application/pdf"
+                            ".djvu" "image/vnd.djvu"
+                            "application/octet-stream"))
+
 (defn entryTagData [entry]
   (element "entry" {}
 
            (element "title" {} (entry :displayname))
            (element "content" {:type "html"})
-           (element "link"
-                    {:type "application/atom+xml; profile=opds-catalog; kind=acquisition"
-                     :kind "acquisition"
-                     :rel  "subsection"
-                     :href (str pathPrefix (entry :href))
-                     }
-                    )))
+           (element "link" (if (entry :collection)
+                             {
+                              :type "application/atom+xml; profile=opds-catalog; kind=acquisition"
+                              :kind "acquisition"
+                              :rel  "subsection"
+                              :href (str pathPrefix "/" dirprefix (entry :href))
+                              }
+                             {:type (fileType (entry :displayname))
+                              :kind "acquisition"
+                              :rel  "http://opds-spec.org/acquisition"
+                              :href (str pathPrefix "/" fileprefix (entry :href))
+                              }
+                             ))))
 
 (defn documentTagData [entries]
   (

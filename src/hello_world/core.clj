@@ -7,7 +7,7 @@
             [hello-world.opds :as opds]
             [compojure.core :refer :all]
             [compojure.route :as route]
-            )
+            [clojure.java.io :as io])
   )
 
 
@@ -18,6 +18,12 @@
    :collection  (not (nil? (xp/$x:tag? "./propstat/prop/resourcetype/collection" respnode)))
    })
 
+(defn file [request path]
+  (do (println "uri " (:uri request) path)
+      {:status  200
+       :headers {}
+       :body    (io/input-stream (davaccess/loadFile path))}
+      ))
 
 (defn dir [request path]
   (do (println "uri " (:uri request) path)
@@ -30,7 +36,7 @@
        ;                                  (map #(xp/$x:text "./displayname" %))
        ;                                  ;(map #(apply :text %))
        ;                                  )))
-       :body    (binding [opds/pathPrefix "/dir"]
+       :body    (binding [opds/pathPrefix ""]
                   (let [
                       ;davxml (slurp "yandex.xml")
                         davxml (davaccess/loadList path)
@@ -42,6 +48,7 @@
 
 (defroutes handler
            (GET "/dir/:path{.*}" [path :as request] (dir request path))
+           (GET "/file/:path{.*}" [path :as request] (file request path))
            (route/not-found "<h1>Page not found</h1>"))
 
 

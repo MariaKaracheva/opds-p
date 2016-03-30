@@ -1,11 +1,13 @@
 (ns hello-world.davaccess
-  (:import (org.apache.http.impl.client BasicResponseHandler HttpClients BasicCredentialsProvider HttpClientBuilder BasicAuthCache LaxRedirectStrategy)
+  (:import (org.apache.http.impl.client BasicResponseHandler HttpClients BasicCredentialsProvider HttpClientBuilder BasicAuthCache LaxRedirectStrategy CloseableHttpClient)
            (java.net URI)
-           (org.apache.http.client.methods HttpRequestBase)
+           (org.apache.http.client.methods HttpRequestBase HttpGet)
            (org.apache.http.auth AuthScope UsernamePasswordCredentials)
            (org.apache.http.client.protocol HttpClientContext)
            (org.apache.http HttpHost)
-           (org.apache.http.impl.auth BasicScheme)))
+           (org.apache.http.impl.auth BasicScheme)
+           (org.apache.http.client ResponseHandler)
+           (org.apache.http.util EntityUtils)))
 
 (require ['lock-key.core :refer ['decrypt 'decrypt-as-str 'decrypt-from-base64]])
 
@@ -46,4 +48,20 @@
                               ]
                           (.execute client get (BasicResponseHandler.)))))
 
-(defn filesList [body] ())
+(defn loadFile [path] (
+                        with-open [^CloseableHttpClient client (.build (doto (HttpClientBuilder/create)
+                                                    ;(.setDefaultCredentialsProvider (doto (BasicCredentialsProvider.)
+                                                    ;                                  (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "lkuka", "Ap7phei:x"))))
+                                                    ;(.setRedirectStrategy (LaxRedirectStrategy.))
+                                                    ))]
+                        (let [
+                              get (doto (HttpGet. (str "https://webdav.yandex.ru/" path))
+                                    (.addHeader "Accept", "*/*")
+                                    (.addHeader "Authorization" (str "OAuth " key))
+                                    )
+                              ]
+                          (.execute client get (doto (proxy [ResponseHandler] []
+                                                       (handleResponse
+                                                         [response]
+                                                         (EntityUtils/toByteArray (.getEntity response)))))))))
+
