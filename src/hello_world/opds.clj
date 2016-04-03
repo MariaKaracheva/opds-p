@@ -59,7 +59,7 @@
              :xml:lang         "en"
              :xmlns:opensearch "http://a9.com/-/spec/opensearch/1.1/"
              }
-            (concat [(element "title" {} "Books - 11 items")]
+            (concat [(element "title" {} "Books")]
                     (map entryTagData entries)
                     )
             ))

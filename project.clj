@@ -13,6 +13,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-core "1.4.0"]
                  [ring/ring-jetty-adapter "1.4.0"]
+                 [ring/ring-defaults "0.2.0"]
                  [org.apache.httpcomponents/httpclient "4.5.2"]
                  [lock-key "1.4.1"]
                  [com.github.kyleburton/clj-xpath "1.4.5"]
@@ -21,5 +22,6 @@
                  [clj-yaml "0.4.0"]
                  ]
   :plugins [[lein-ring "0.9.7"]]
-  :ring {:handler hello-world.core/handler}
+  :ring {:handler hello-world.core/standalone-routes}
+  :profiles { :uberjar {:ring {:handler hello-world.core/handler}}}
   )

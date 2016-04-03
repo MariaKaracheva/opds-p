@@ -13,5 +13,5 @@ or
 
 **Build war**
 
-    lein ring uberwar
+    lein ring uberwar opds-p.war
 

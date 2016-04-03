@@ -24,7 +24,7 @@
    :collection  (not (nil? (xp/$x:tag? "./propstat/prop/resourcetype/collection" respnode)))
    })
 
-(defn file [request path]
+(defn file [request path context]
   (do (println "uri " (:uri request) path)
       (if (allowedPath path)
         {:status  200
@@ -35,8 +35,8 @@
         )
       ))
 
-(defn dir [request path]
-  (do (println "uri " (:uri request) path)
+(defn dir [request path context]
+  (do (println "uri " (:uri request) path context)
       {:status  200
        :headers {"Content-Type" "text/xml; charset=utf-8"}
        ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
@@ -51,15 +51,23 @@
                       ;davxml (slurp "yandex.xml")
                         davxml (davaccess/loadList path)
                       parsed (xp/$x "*//response" davxml)]
-                    (xml/emit-str (opds/documentTagData (->> parsed
-                                                             (map respEntry)
-                                                             (filter #(allowedPath (% :href)))
-                                                             )))))
+                    (binding [opds/pathPrefix context]
+                      (xml/emit-str (opds/documentTagData (->> parsed
+                                                               (map respEntry)
+                                                               (filter #(allowedPath (% :href)))
+                                                               ))))))
        }))
 
 (defroutes handler
-           (GET "/dir/:path{.*}" [path :as request] (dir request path))
-           (GET "/file/:path{.*}" [path :as request] (file request path))
+           (GET "/dir/:path{.*}" [path :as request] (dir request path (:context request)))
+           (GET "/file/:path{.*}" [path :as request] (file request path (:context request)))
            (route/not-found "<h1>Page not found</h1>"))
+
+(defroutes standalone-routes
+           (context "/opds-p" req handler)
+           (route/not-found "Not Found"))
+
+;(def standalone-app
+;  (wrap-defaults standalone-routes site-defaults))
 
 
