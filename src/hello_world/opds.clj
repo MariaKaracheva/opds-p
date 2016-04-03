@@ -18,8 +18,8 @@
 
 (def ^:dynamic pathPrefix "")
 
-(def dirprefix "dir/")
-(def fileprefix "file/")
+(def dirprefix "dir")
+(def fileprefix "file")
 
 (defn fileType [filename] (condp #(ends-with? (lower-case %2) %1) filename
                             ".epub" "application/epub+zip"

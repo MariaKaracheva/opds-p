@@ -7,17 +7,23 @@
            (org.apache.http HttpHost)
            (org.apache.http.impl.auth BasicScheme)
            (org.apache.http.client ResponseHandler)
-           (org.apache.http.util EntityUtils)))
+           (org.apache.http.util EntityUtils))
+  (:require [clj-yaml.core :as yaml])
+  )
 
 (require ['lock-key.core :refer ['decrypt 'decrypt-as-str 'decrypt-from-base64]])
 
 
-(defn basicContextFor [^String host ^Integer port] (doto (HttpClientContext/create)
-                                                     (.setAuthCache (doto (BasicAuthCache.)
-                                                                      (.put (HttpHost. host port) (BasicScheme.))))))
+(defn basicContextFor [String host ^Integer port] (doto (HttpClientContext/create)
+                                                    (.setAuthCache (doto (BasicAuthCache.)
+                                                                     (.put (HttpHost. host port) (BasicScheme.))))))
 
-(def key (let [file (clojure.string/join "/" [(java.lang.System/getenv "HOME") ".opds-p" "key"])]
-           (decrypt-from-base64 (slurp file) "9qPBq1kFkOfPy5w9")
+(def settings (let [file (clojure.string/join "/" [(java.lang.System/getenv "HOME") ".opds-p" "settings.yaml"])]
+                (yaml/parse-string (slurp file))
+                ))
+
+(def key (let [settingsKey (:key (first settings))]
+           (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
            ))
 
 (defn PROPFIND [url] (doto (proxy [HttpRequestBase] []
@@ -49,11 +55,7 @@
                           (.execute client get (BasicResponseHandler.)))))
 
 (defn loadFile [path] (
-                        with-open [^CloseableHttpClient client (.build (doto (HttpClientBuilder/create)
-                                                    ;(.setDefaultCredentialsProvider (doto (BasicCredentialsProvider.)
-                                                    ;                                  (.setCredentials AuthScope/ANY (UsernamePasswordCredentials. "lkuka", "Ap7phei:x"))))
-                                                    ;(.setRedirectStrategy (LaxRedirectStrategy.))
-                                                    ))]
+                        with-open [^CloseableHttpClient client (.build (doto (HttpClientBuilder/create)))]
                         (let [
                               get (doto (HttpGet. (str "https://webdav.yandex.ru/" path))
                                     (.addHeader "Accept", "*/*")

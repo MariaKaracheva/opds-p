@@ -10,6 +10,12 @@
             [clojure.java.io :as io])
   )
 
+(def allowedDirs (:paths (first davaccess/settings)))
+(println "allowedDirs=" allowedDirs)
+
+(defn removePrifix [str prefix] (if (string/starts-with? str prefix) (subs str (count prefix)) str))
+
+(defn allowedPath [path] (some #(string/starts-with? (removePrifix path "/") %) allowedDirs))
 
 (defn respEntry [respnode]
   {
@@ -20,9 +26,13 @@
 
 (defn file [request path]
   (do (println "uri " (:uri request) path)
-      {:status  200
-       :headers {}
-       :body    (io/input-stream (davaccess/loadFile path))}
+      (if (allowedPath path)
+        {:status  200
+         :headers {}
+         :body    (io/input-stream (davaccess/loadFile path))}
+        {:status 404
+         :body   "Not Found"}
+        )
       ))
 
 (defn dir [request path]
@@ -43,6 +53,7 @@
                       parsed (xp/$x "*//response" davxml)]
                     (xml/emit-str (opds/documentTagData (->> parsed
                                                              (map respEntry)
+                                                             (filter #(allowedPath (% :href)))
                                                              )))))
        }))
 
