@@ -7,11 +7,17 @@
             [hello-world.opds :as opds]
             [compojure.core :refer :all]
             [compojure.route :as route]
-            [clojure.java.io :as io])
+            [clojure.java.io :as io]
+            [cemerick.friend :as friend]
+            (cemerick.friend [workflows :as workflows]
+                             [credentials :as creds])
+            )
   )
 
 (def allowedDirs (:paths (first davaccess/settings)))
 (println "allowedDirs=" allowedDirs)
+
+(defn userIsAllowed [input] (some #(and (= (:login %) (:username input)) (= (:password %) (:password input))) davaccess/settings))
 
 (defn removePrifix [str prefix] (if (string/starts-with? str prefix) (subs str (count prefix)) str))
 
@@ -58,10 +64,23 @@
                                                                ))))))
        }))
 
-(defroutes handler
+(defroutes handler-inner
            (GET "/dir/:path{.*}" [path :as request] (dir request path (:context request)))
            (GET "/file/:path{.*}" [path :as request] (file request path (:context request)))
            (route/not-found "<h1>Page not found</h1>"))
+
+(def handler
+  (-> handler-inner
+      (friend/authenticate {
+                            :allow-anon? false
+                            :unauthenticated-handler #(workflows/http-basic-deny "Friend demo" %)
+                            :credential-fn (fn [input] (println "auth" input)
+                                             (let [allowed (userIsAllowed input)]
+                                               (if allowed {:identity (:username input)} nil)))
+                            :workflows [(workflows/http-basic)]
+                            })
+      ; ...required Ring middlewares ...
+      ))
 
 (defroutes standalone-routes
            (context "/opds-p" req handler)

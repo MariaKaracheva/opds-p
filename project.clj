@@ -20,6 +20,7 @@
                  [org.clojure/data.xml "0.0.8"]
                  [compojure "1.5.0"]
                  [clj-yaml "0.4.0"]
+                 [com.cemerick/friend "0.2.1"]
                  ]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler hello-world.core/standalone-routes}
