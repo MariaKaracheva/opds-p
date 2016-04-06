@@ -18,11 +18,15 @@
                                                     (.setAuthCache (doto (BasicAuthCache.)
                                                                      (.put (HttpHost. host port) (BasicScheme.))))))
 
-(def settings (let [file (clojure.string/join "/" [(java.lang.System/getenv "HOME") ".opds-p" "settings.yaml"])]
-                (yaml/parse-string (slurp file))
-                ))
+(def settingsPath (clojure.string/join "/" [ (java.lang.System/getenv "HOME") ".opds-p"]))
 
-(def key (let [settingsKey (:key (first settings))]
+(defn loadSettings [] (let [file (clojure.string/join "/" [settingsPath "settings.yaml"])]
+                        (yaml/parse-string (slurp file))
+                        ))
+
+(def settings (atom (loadSettings)))
+
+(defn key [] (let [settingsKey (:key (first @settings))]
            (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
            ))
 
@@ -49,7 +53,7 @@
                               get (doto (PROPFIND (str "https://webdav.yandex.ru/" path))
                                     (.addHeader "Depth" "1")
                                     (.addHeader "Accept", "*/*")
-                                    (.addHeader "Authorization" (str "OAuth " key))
+                                    (.addHeader "Authorization" (str "OAuth " (key)))
                                     )
                               ]
                           (.execute client get (BasicResponseHandler.)))))
@@ -59,7 +63,7 @@
                         (let [
                               get (doto (HttpGet. (str "https://webdav.yandex.ru/" path))
                                     (.addHeader "Accept", "*/*")
-                                    (.addHeader "Authorization" (str "OAuth " key))
+                                    (.addHeader "Authorization" (str "OAuth " (key)))
                                     )
                               ]
                           (.execute client get (doto (proxy [ResponseHandler] []
