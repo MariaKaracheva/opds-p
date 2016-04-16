@@ -30,10 +30,10 @@
            (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
            ))
 
-(defn PROPFIND [url] (doto (proxy [HttpRequestBase] []
+(defn PROPFIND [^URI uri] (doto (proxy [HttpRequestBase] []
                              (getMethod
                                []
-                               (str "PROPFIND"))) (.setURI (URI/create url))))
+                               (str "PROPFIND"))) (.setURI uri)))
 
 
 ;CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -47,10 +47,7 @@
                                                     ;(.setRedirectStrategy (LaxRedirectStrategy.))
                                                     ))]
                         (let [
-                              ;url  (HttpGet. "http://localhost:7000/")
-                              ;url  (HttpGet. "http://localhost:7000/")
-                              ;get  (HttpGet.  "http://uits-labs.ru/")
-                              get (doto (PROPFIND (str "https://webdav.yandex.ru/" path))
+                              get (doto (PROPFIND (URI. "https" "webdav.yandex.ru" (str "/" path) nil))
                                     (.addHeader "Depth" "1")
                                     (.addHeader "Accept", "*/*")
                                     (.addHeader "Authorization" (str "OAuth " (key)))
@@ -61,7 +58,8 @@
 (defn loadFile [path] (
                         with-open [^CloseableHttpClient client (.build (doto (HttpClientBuilder/create)))]
                         (let [
-                              get (doto (HttpGet. (str "https://webdav.yandex.ru/" path))
+                              url (URI. "https" "webdav.yandex.ru" (str "/" path) nil)
+                              get (doto (HttpGet. url)
                                     (.addHeader "Accept", "*/*")
                                     (.addHeader "Authorization" (str "OAuth " (key)))
                                     )
