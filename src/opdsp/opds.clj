@@ -1,4 +1,4 @@
-(ns hello-world.opds
+(ns opdsp.opds
   (:require [clojure.data.xml :refer [element]])
   (:require [clojure.string :refer [ends-with? lower-case]]))
 

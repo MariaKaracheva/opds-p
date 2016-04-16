@@ -1,10 +1,10 @@
-(ns hello-world.core
+(ns opdsp.core
   (:require [ring.util.response :refer [response content-type]])
-  (:require [hello-world.davaccess :as davaccess]
+  (:require [opdsp.davaccess :as davaccess]
             [clojure.string :as string]
             [clojure.data.xml :as xml]
             [clj-xpath.core :as xp]
-            [hello-world.opds :as opds]
+            [opdsp.opds :as opds]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [clojure.java.io :as io]

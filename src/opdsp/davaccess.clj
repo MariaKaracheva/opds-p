@@ -1,4 +1,4 @@
-(ns hello-world.davaccess
+(ns opdsp.davaccess
   (:import (org.apache.http.impl.client BasicResponseHandler HttpClients BasicCredentialsProvider HttpClientBuilder BasicAuthCache LaxRedirectStrategy CloseableHttpClient)
            (java.net URI)
            (org.apache.http.client.methods HttpRequestBase HttpGet)
