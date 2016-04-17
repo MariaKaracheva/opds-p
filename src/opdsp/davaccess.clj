@@ -26,6 +26,12 @@
 
 (def settings (atom (loadSettings)))
 
+(def webdavserver {
+                   :scheme "https"
+                   :host "webdav.yandex.ru"
+                   :port 443
+                   })
+
 (defn key [] (let [settingsKey (:key (first @settings))]
            (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
            ))
@@ -47,7 +53,8 @@
                                                     ;(.setRedirectStrategy (LaxRedirectStrategy.))
                                                     ))]
                         (let [
-                              get (doto (PROPFIND (URI. "https" "webdav.yandex.ru" (str "/" path) nil))
+                              uri (URI. (webdavserver :scheme) nil (webdavserver :host) (webdavserver :port) (str "/" path) nil nil)
+                              get (doto (PROPFIND uri)
                                     (.addHeader "Depth" "1")
                                     (.addHeader "Accept", "*/*")
                                     (.addHeader "Authorization" (str "OAuth " (key)))
@@ -58,7 +65,7 @@
 (defn loadFile [path] (
                         with-open [^CloseableHttpClient client (.build (doto (HttpClientBuilder/create)))]
                         (let [
-                              url (URI. "https" "webdav.yandex.ru" (str "/" path) nil)
+                              url (URI. (webdavserver :scheme) nil (webdavserver :host) (webdavserver :port) (str "/" path) nil nil)
                               get (doto (HttpGet. url)
                                     (.addHeader "Accept", "*/*")
                                     (.addHeader "Authorization" (str "OAuth " (key)))

@@ -3,7 +3,29 @@
   (:require [opdsp.core :refer [handler standalone-routes]])
   (:require [ring.adapter.jetty :refer [run-jetty]])
   (:require [clj-http.client :as client])
+  (:require [compojure.core :refer :all]
+            [compojure.route :as route])
   )
+
+(defmacro PROPFIND "Generate a `PROPFIND` route."
+  [path args & body]
+  (compile-route :propfind path args body))
+
+(defn webdav-mock [f]
+  (let [server (run-jetty (routes
+                            (PROPFIND "/*" request
+                              (println "request=" request)
+                              (slurp "testsamples/dav-root.xml"))
+                            )
+                          {:port 2999 :join? false})]
+    (with-redefs [opdsp.davaccess/webdavserver {
+                                                :scheme "http"
+                                                :host  "localhost"
+                                                :port 2999
+                                                }] (f))
+    (.stop server)
+    ))
+
 
 (defn opds-p-server [f]
   (println "start")
@@ -11,12 +33,13 @@
     (f)
     (.stop server)
     )
-
   (println "stop")
-
   )
 
-(use-fixtures :each opds-p-server)
+(use-fixtures :each
+              webdav-mock
+              opds-p-server
+              )
 
 
 (deftest dirUnautenticated

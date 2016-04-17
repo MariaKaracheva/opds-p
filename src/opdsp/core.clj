@@ -58,6 +58,7 @@
                       ;davxml (slurp "yandex.xml")
                         davxml (davaccess/loadList path)
                       parsed (xp/$x "*//response" davxml)]
+                    ;(spit "testsamples/dav-0.xml" davxml)
                     (binding [opds/pathPrefix context]
                       (xml/emit-str (opds/documentTagData (->> parsed
                                                                (map respEntry)

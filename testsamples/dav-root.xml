@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<d:multistatus xmlns:d="DAV:">
+    <d:response>
+        <d:href>/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Wed, 04 Apr 2012 20:00:00 GMT</d:getlastmodified>
+                <d:displayname>disk</d:displayname>
+                <d:creationdate>2012-04-04T20:00:00Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/advanced%20imaging%20articles/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Fri, 11 Mar 2016 09:28:56 GMT</d:getlastmodified>
+                <d:displayname>advanced imaging articles</d:displayname>
+                <d:creationdate>2016-03-11T09:28:56Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Wed, 11 Jun 2014 17:59:20 GMT</d:getlastmodified>
+                <d:displayname>books</d:displayname>
+                <d:creationdate>2014-06-11T17:59:20Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/technicalBooks/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Sun, 17 Aug 2014 16:49:45 GMT</d:getlastmodified>
+                <d:displayname>technicalBooks</d:displayname>
+                <d:creationdate>2014-08-17T16:49:45Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/%D0%90%D1%80%D1%85%D0%B8%D0%B2/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Sat, 31 Oct 2015 10:59:22 GMT</d:getlastmodified>
+                <d:displayname>Архив</d:displayname>
+                <d:creationdate>2015-10-31T10:59:22Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/CAM00400.jpg</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Fri, 26 Jun 2015 09:17:02 GMT</d:getlastmodified>
+                <d:getetag>0b3701de690c28ed8832ddab8bfa6b59</d:getetag>
+                <d:getcontenttype>image/jpeg</d:getcontenttype>
+                <d:getcontentlength>2691759</d:getcontentlength>
+                <d:displayname>CAM00400.jpg</d:displayname>
+                <d:creationdate>2015-06-26T09:17:02Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/Gym%20Fee2.pdf</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Tue, 05 Jan 2016 14:38:39 GMT</d:getlastmodified>
+                <d:getetag>047705cd70dc009961cadc6efe1ebdb5</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+                <d:getcontentlength>110431</d:getcontentlength>
+                <d:displayname>Gym Fee2.pdf</d:displayname>
+                <d:creationdate>2016-01-05T14:38:39Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/%D0%A3%D0%BF%D1%80%D0%B0%D0%B6%D0%BD%D0%B5%D0%BD%D0%B8%D1%8F%20%D1%88%D0%B5%D0%B8.png</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Mon, 07 Jul 2014 08:37:00 GMT</d:getlastmodified>
+                <d:getetag>5f19f914df088fb25fe83792d6190698</d:getetag>
+                <d:getcontenttype>image/png</d:getcontenttype>
+                <d:getcontentlength>448726</d:getcontentlength>
+                <d:displayname>Упражнения шеи.png</d:displayname>
+                <d:creationdate>2014-07-07T08:37:00Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+</d:multistatus>
