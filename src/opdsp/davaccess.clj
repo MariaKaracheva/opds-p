@@ -7,7 +7,8 @@
            (org.apache.http HttpHost)
            (org.apache.http.impl.auth BasicScheme)
            (org.apache.http.client ResponseHandler)
-           (org.apache.http.util EntityUtils))
+           (org.apache.http.util EntityUtils)
+           (java.io File))
   (:require [clj-yaml.core :as yaml])
   )
 
@@ -21,7 +22,9 @@
 (def settingsPath (clojure.string/join "/" [ (java.lang.System/getenv "HOME") ".opds-p"]))
 
 (defn loadSettings [] (let [file (clojure.string/join "/" [settingsPath "settings.yaml"])]
-                        (yaml/parse-string (slurp file))
+                        (if (.exists (File. file))
+                          (yaml/parse-string (slurp file))
+                          nil)
                         ))
 
 (def settings (atom (loadSettings)))
