@@ -13,6 +13,7 @@
                  [clj-yaml "0.4.0"]
                  [com.cemerick/friend "0.2.1"]
                  [hawk "0.2.10"]
+                 [com.novemberain/monger "3.1.0"]
                  ]
 
   :plugins [[lein-ring "0.9.7"] [lein-auto "0.1.2"]]

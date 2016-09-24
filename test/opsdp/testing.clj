@@ -1,6 +1,6 @@
 (ns opsdp.testing
   (:require [clojure.test :refer :all])
-  (:require [opdsp.core :refer [handler standalone-routes]])
+  (:require [opdsp.core :refer [opds-p-handler standalone-routes]])
   (:require [ring.adapter.jetty :refer [run-jetty]])
   (:require [clj-http.client :as client])
   (:require [compojure.core :refer :all]
@@ -32,8 +32,13 @@
     ))
 
 (defn mock-settings [f]
-  (with-redefs [opdsp.davaccess/settingsPath "testsamples"]
-    (reset! opdsp.davaccess/settings (opdsp.davaccess/loadSettings))
+  (with-redefs [opdsp.davaccess/settingsPath "testsamples"
+                opdsp.davaccess/loadSettings (fn [_] {:login    "aaa",
+                                                      :password "ttt",
+                                                      :key      "l6eKwQI+M7alHj5IJVf74uh2SiWHVbfKhjylgrYix0k=",
+                                                      :paths    ["books", "technicalBooks"]
+                                                      })
+                ]
     (f)))
 
 (defn opds-p-server [f]
@@ -60,8 +65,11 @@
 
 
 (deftest dirAutenticated
-  (is (= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:pse=\"http://vaemendis.net/opds-pse/ns\" xmlns:opds=\"http://opds-spec.org/2010/catalog\" xml:lang=\"en\" xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"><title>Books</title><entry><title>books</title><content type=\"html\"></content><link type=\"application/atom+xml; profile=opds-catalog; kind=acquisition\" kind=\"acquisition\" rel=\"subsection\" href=\"/opds-p/dir/books/\"></link></entry><entry><title>technicalBooks</title><content type=\"html\"></content><link type=\"application/atom+xml; profile=opds-catalog; kind=acquisition\" kind=\"acquisition\" rel=\"subsection\" href=\"/opds-p/dir/technicalBooks/\"></link></entry></feed>"
-         (:body (client/get "http://localhost:3001/opds-p/dir/" {:basic-auth "aaa:ttt"}))))
+  (let [response (client/get "http://localhost:3001/opds-p/dir/" {:basic-auth "aaa:ttt" :throw-exceptions false})]
+    (println "response=" response)
+    (is (= 200 (:status response)))
+    (is (= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:pse=\"http://vaemendis.net/opds-pse/ns\" xmlns:opds=\"http://opds-spec.org/2010/catalog\" xml:lang=\"en\" xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"><title>Books</title><entry><title>books</title><content type=\"html\"></content><link type=\"application/atom+xml; profile=opds-catalog; kind=acquisition\" kind=\"acquisition\" rel=\"subsection\" href=\"/opds-p/dir/books/\"></link></entry><entry><title>technicalBooks</title><content type=\"html\"></content><link type=\"application/atom+xml; profile=opds-catalog; kind=acquisition\" kind=\"acquisition\" rel=\"subsection\" href=\"/opds-p/dir/technicalBooks/\"></link></entry></feed>"
+           (:body response))))
   )
 
 (deftest fileAvaliable

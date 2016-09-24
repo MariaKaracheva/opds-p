@@ -15,10 +15,18 @@
             )
   )
 
-(defn allowedDirs [] (:paths (first @davaccess/settings)))
-(println "allowedDirs=" (allowedDirs))
+(defn allowedDirs [] (:paths davaccess/*settings*))
 
-(defn userIsAllowed [input] (some #(and (= (:login %) (:username input)) (= (:password %) (:password input))) @davaccess/settings))
+(defn userIsAllowed [input]
+  (println "userIsAllowed=" input)
+  (let [settings
+        (davaccess/loadSettings (:username input))
+        ;davaccess/*settings*
+        allowed (= (:password settings) (:password input))]
+    (println "Settings=" settings)
+    (println "passwrd=" (:password settings) (:password input))
+    (println "allowed=" allowed)
+    allowed))
 
 (defn removePrifix [str prefix] (if (string/starts-with? str prefix) (subs str (count prefix)) str))
 
@@ -32,7 +40,7 @@
    })
 
 (defn file [request path context]
-  (do (println "uri " (:uri request) path)
+  (do (println "uri " (:uri request) path request)
       (if (allowedPath path)
         {:status  200
          :headers {}
@@ -43,7 +51,7 @@
       ))
 
 (defn dir [request path context]
-  (do (println "uri " (:uri request) path context)
+  (do (println "uri " (:uri request) path context request)
       {:status  200
        :headers {"Content-Type" "text/xml; charset=utf-8"}
        ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
@@ -71,8 +79,16 @@
            (GET "/file/:path{.*}" [path :as request] (file request path (:context request)))
            (route/not-found "<h1>Page not found</h1>"))
 
-(def handler
+
+
+(defn wrap-settings [handler]
+  (fn [request]
+    (binding [davaccess/*settings* (davaccess/loadSettings (:username (friend/current-authentication request)))]
+      (handler request))))
+
+(def opds-p-handler
   (-> handler-inner
+      (wrap-settings)
       (friend/authenticate {
                             :allow-anon?             false
                             :unauthenticated-handler #(workflows/http-basic-deny "opds-p" %)
@@ -85,19 +101,14 @@
       ))
 
 (defroutes standalone-routes
-           (context "/opds-p" req handler)
+           (context "/opds-p" req opds-p-handler)
            (route/not-found "Not Found"))
 
 (def watcher (atom nil))
 
 (defn init []
   (println "init")
-  (reset! watcher
-          (hawk/watch! [
-                        {:paths   [davaccess/settingsPath]
-                         :handler (fn [ctx e]
-                                    (reset! davaccess/settings (davaccess/loadSettings))
-                                    ctx)}])))
+  )
 (defn destroy [] (println "destroy") (hawk/stop! @watcher))
 
 ;(def standalone-app
