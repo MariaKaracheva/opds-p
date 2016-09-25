@@ -19,8 +19,6 @@
                                                     (.setAuthCache (doto (BasicAuthCache.)
                                                                      (.put (HttpHost. host port) (BasicScheme.))))))
 
-(def settingsPath (clojure.string/join "/" [ (java.lang.System/getenv "HOME") ".opds-p"]))
-
 
 (def mongodb (delay (let [conn (mg/connect)]
                         (mg/get-db conn "opds-p"))))

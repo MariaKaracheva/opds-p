@@ -11,10 +11,12 @@
                  [org.clojure/data.xml "0.0.8"]
                  [compojure "1.5.0"]
                  [clj-yaml "0.4.0"]
+                 [clj-http "3.0.1"]
                  [com.cemerick/friend "0.2.1"]
                  [hawk "0.2.10"]
                  [com.novemberain/monger "3.1.0"]
                  [hiccup "1.0.5"]
+                 [org.clojure/data.json "0.2.6"]
                  ]
 
   :plugins [[lein-ring "0.9.7"] [lein-auto "0.1.2"]]
@@ -27,7 +29,6 @@
              :test {
                     :dependencies [
                                    [ring/ring-jetty-adapter "1.4.0"]
-                                   [clj-http "3.0.1"]
                                    ]
                     }
 

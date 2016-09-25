@@ -1,5 +1,6 @@
 (ns opdsp.pages (:require [hiccup.core :refer :all]
-                          [hiccup.page :refer [include-css include-js]]))
+                          [hiccup.page :refer [include-css include-js]]
+                          [opdsp.shared :refer :all]))
 
 
 (defn login [] (html [:html
@@ -29,7 +30,9 @@
                       [:body
                        [:div.container
                         [:form.form-signin
-                         [:h2.form-signin-heading "Please sign in!"]
+                         [:h2.form-signin-heading "Please sign in"]
+                         [:div [:a {:href (str "https://oauth.yandex.ru/authorize?response_type=code&client_id=" (:id (app-settings :yandex-app)))}
+                                "Войти через Яндекс"]]
                          [:label.sr-only {:for "inputEmail"} "Email address"]
                          [:input#inputEmail.form-control
                           {:autofocus   "autofocus",

@@ -2,6 +2,7 @@
   (:require [ring.util.response :refer [response content-type]]
             [ring.middleware.session :refer [wrap-session]]
             [ring.middleware.resource :refer [wrap-resource]]
+            [ring.middleware.params :refer [wrap-params]]
             )
   (:require [opdsp.davaccess :as davaccess]
             [clojure.string :as string]
@@ -16,8 +17,12 @@
                              [credentials :as creds])
             [hawk.core :as hawk]
             [opdsp.pages :as pages]
-            )
-  )
+            [clj-http.client :as client]
+            [opdsp.shared :refer :all]
+            [clojure.data.json :as json]
+            [clj-yaml.core :as yaml])
+  (:import (java.io File)))
+
 
 (defn allowedDirs [] (:paths davaccess/*settings*))
 
@@ -102,6 +107,27 @@
 
 (defroutes handler-inner
            (GET "/login" [] (pages/login) )
+           (GET "/oauth" request (do
+                                   (let [code (get (:query-params request) "code")
+                                         oaresp (client/post "https://oauth.yandex.ru/token"
+                                                             {:basic-auth       [(:id (app-settings :yandex-app)) (:password (app-settings :yandex-app))]
+                                                              :form-params      {:grant_type "authorization_code"
+                                                                                 :code       code}
+                                                              :as               :json
+                                                              :throw-exceptions false})]
+                                     (println "code=" code " resp=" oaresp)
+                                     (if (= 200 (:status oaresp))
+                                       (let [accessTocken (get (json/read-str (:body oaresp)) "access_token")
+                                             authList (client/get "https://login.yandex.ru/info"
+                                                                  {:query-params     {:format      "json"
+                                                                                      :oauth_token accessTocken}
+                                                                   :as               :json
+                                                                   :throw-exceptions false})]
+                                         (println "accessTocken=" accessTocken "oauthList=" authList))
+                                       )
+                                     (:body oaresp)
+                                     )
+                                   ))
            (GET "/dir/:path{.*}" [path :as request] (opds-authenticate (fn [_] (dir request path (:context request)))))
            (GET "/file/:path{.*}" [path :as request] (opds-authenticate (fn [_] (file request path (:context request)))))
            (route/not-found "<h1>Page not found</h1>"))
@@ -117,6 +143,7 @@
   (-> handler-inner
       (wrap-settings)
       (wrap-session)
+      (wrap-params)
       (wrap-resource "public")
       ; ...required Ring middlewares ...
       ))
