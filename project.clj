@@ -14,10 +14,14 @@
                  [com.cemerick/friend "0.2.1"]
                  [hawk "0.2.10"]
                  [com.novemberain/monger "3.1.0"]
+                 [hiccup "1.0.5"]
                  ]
 
   :plugins [[lein-ring "0.9.7"] [lein-auto "0.1.2"]]
-  :ring {:handler opdsp.core/standalone-routes :init opdsp.core/init :destroy opdsp.core/destroy}
+  :ring {:handler opdsp.core/standalone-routes
+         :init opdsp.core/init
+         :destroy opdsp.core/destroy
+         :reload-paths ["src/"]}
   :profiles {
              :uberjar {:ring {:handler opdsp.core/handler}}
              :test {

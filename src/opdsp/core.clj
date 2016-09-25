@@ -1,5 +1,8 @@
 (ns opdsp.core
-  (:require [ring.util.response :refer [response content-type]])
+  (:require [ring.util.response :refer [response content-type]]
+            [ring.middleware.session :refer [wrap-session]]
+            [ring.middleware.resource :refer [wrap-resource]]
+            )
   (:require [opdsp.davaccess :as davaccess]
             [clojure.string :as string]
             [clojure.data.xml :as xml]
@@ -12,6 +15,7 @@
             (cemerick.friend [workflows :as workflows]
                              [credentials :as creds])
             [hawk.core :as hawk]
+            [opdsp.pages :as pages]
             )
   )
 
@@ -74,9 +78,32 @@
                                                                ))))))
        }))
 
+(defn opds-authenticate [handler]
+  (friend/authenticate handler {
+                        :allow-anon?   false
+                        :unauthenticated-handler #(workflows/http-basic-deny "opds-p" %)
+                        :credential-fn (fn [input]
+                                         (let [allowed (userIsAllowed input)]
+                                           (if allowed {:identity (:username input)} nil)))
+                        :workflows     [(workflows/http-basic)]
+                        }))
+
+(defn main-authenticate [handler]
+  (friend/authenticate handler {
+                        ;:allow-anon?             false
+                        ;:unauthenticated-handler #(workflows/ "opds-p" %)
+                        :credential-fn           (fn [input]
+                                                   (let [allowed (userIsAllowed input)]
+                                                     (if allowed {:identity (:username input)} nil)))
+                        :workflows               [(workflows/http-basic) (workflows/interactive-form)]
+                        }))
+
+
+
 (defroutes handler-inner
-           (GET "/dir/:path{.*}" [path :as request] (dir request path (:context request)))
-           (GET "/file/:path{.*}" [path :as request] (file request path (:context request)))
+           (GET "/login" [] (pages/login) )
+           (GET "/dir/:path{.*}" [path :as request] (opds-authenticate (fn [_] (dir request path (:context request)))))
+           (GET "/file/:path{.*}" [path :as request] (opds-authenticate (fn [_] (file request path (:context request)))))
            (route/not-found "<h1>Page not found</h1>"))
 
 
@@ -89,14 +116,8 @@
 (def opds-p-handler
   (-> handler-inner
       (wrap-settings)
-      (friend/authenticate {
-                            :allow-anon?             false
-                            :unauthenticated-handler #(workflows/http-basic-deny "opds-p" %)
-                            :credential-fn           (fn [input]
-                                             (let [allowed (userIsAllowed input)]
-                                               (if allowed {:identity (:username input)} nil)))
-                            :workflows               [(workflows/http-basic)]
-                            })
+      (wrap-session)
+      (wrap-resource "public")
       ; ...required Ring middlewares ...
       ))
 
