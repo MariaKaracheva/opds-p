@@ -32,8 +32,8 @@
     ))
 
 (defn mock-settings [f]
-  (with-redefs [opdsp.davaccess/settingsPath "testsamples"
-                opdsp.davaccess/loadSettings (fn [_] {:login    "aaa",
+  (with-redefs [opdsp.shared/settingsPath "testsamples"
+                opdsp.shared/loadSettings (fn [_] {:login    "aaa",
                                                       :password "ttt",
                                                       :key      "l6eKwQI+M7alHj5IJVf74uh2SiWHVbfKhjylgrYix0k=",
                                                       :paths    ["books", "technicalBooks"]

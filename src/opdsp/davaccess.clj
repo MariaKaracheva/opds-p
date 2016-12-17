@@ -9,10 +9,8 @@
            (org.apache.http.client ResponseHandler)
            (org.apache.http.util EntityUtils)
            (java.io File))
-  (:require [clj-yaml.core :as yaml] [monger.core :as mg] [monger.collection :as mc]
-            [monger.operators :refer :all]))
-
-(require ['lock-key.core :refer ['decrypt 'decrypt-as-str 'decrypt-from-base64]])
+  (:require [clj-yaml.core :as yaml]
+            [opdsp.shared :refer :all]))
 
 
 (defn basicContextFor [String host ^Integer port] (doto (HttpClientContext/create)
@@ -20,12 +18,7 @@
                                                                      (.put (HttpHost. host port) (BasicScheme.))))))
 
 
-(def mongodb (delay (let [conn (mg/connect)]
-                        (mg/get-db conn "opds-p"))))
 
-(defn loadSettings [^String user] (mc/find-one-as-map @mongodb "userSettings" {:login user} ))
-
-(def ^:dynamic *settings*)
 
 (def webdavserver {
                    :scheme "https"
@@ -33,9 +26,6 @@
                    :port 443
                    })
 
-(defn key [] (let [settingsKey (:key *settings*)]
-           (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
-           ))
 
 (defn PROPFIND [^URI uri] (doto (proxy [HttpRequestBase] []
                              (getMethod

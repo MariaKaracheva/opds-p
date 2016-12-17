@@ -23,6 +23,8 @@
   :ring {:handler opdsp.core/standalone-routes
          :init opdsp.core/init
          :destroy opdsp.core/destroy
+         :auto-reload? true
+         :auto-refresh? true
          :reload-paths ["src/"]}
   :profiles {
              :uberjar {:ring {:handler opdsp.core/handler}}
