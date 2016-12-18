@@ -79,7 +79,7 @@
 
 (defn wrap-settings [handler]
   (fn [request]
-    (binding [opdsp.shared/*settings* (opdsp.shared/loadSettings (:username (friend/current-authentication request)))]
+    (binding [opdsp.shared/*userSettings* (opdsp.shared/loadUserSettings (:username (friend/current-authentication request)))]
       (handler request))))
 
 (def opds-p-handler

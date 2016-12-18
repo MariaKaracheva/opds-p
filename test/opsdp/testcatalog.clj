@@ -1,4 +1,4 @@
-(ns opsdp.testing
+(ns opsdp.testcatalog
   (:require [clojure.test :refer :all])
   (:require [opdsp.core :refer [opds-p-handler standalone-routes]])
   (:require [ring.adapter.jetty :refer [run-jetty]])
@@ -32,12 +32,18 @@
     ))
 
 (defn mock-settings [f]
-  (with-redefs [opdsp.shared/settingsPath "testsamples"
-                opdsp.shared/loadSettings (fn [_] {:login    "aaa",
-                                                      :password "ttt",
-                                                      :key      "l6eKwQI+M7alHj5IJVf74uh2SiWHVbfKhjylgrYix0k=",
-                                                      :paths    ["books", "technicalBooks"]
-                                                      })
+  (with-redefs [
+                opdsp.shared/loadUserSettings (fn [_] {
+                                                       :key   "l6eKwQI+M7alHj5IJVf74uh2SiWHVbfKhjylgrYix0k=",
+                                                       :catalog  {
+                                                                  :auth {
+                                                                         :login    "aaa",
+                                                                         :password "ttt",
+                                                                         }
+
+                                                                  :paths ["books", "technicalBooks"]
+                                                                  }
+                                                       })
                 ]
     (f)))
 

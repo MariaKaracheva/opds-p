@@ -20,10 +20,10 @@
 (def mongodb (delay (let [conn (mg/connect)]
                       (mg/get-db conn "opds-p"))))
 
-(defn loadSettings [^String user] (mc/find-one-as-map @mongodb "userSettings" {:login user} ))
+(defn loadUserSettings [^String user] (mc/find-one-as-map @mongodb "userSettings" {:login user}))
 
-(def ^:dynamic *settings*)
+(def ^:dynamic *userSettings*)
 
-(defn key [] (let [settingsKey (:key *settings*)]
+(defn yandex-key [] (let [settingsKey (:key *userSettings*)]
                (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
                ))

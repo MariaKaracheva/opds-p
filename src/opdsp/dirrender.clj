@@ -8,16 +8,15 @@
             [clojure.data.xml :as xml]
             ))
 
-(defn allowedDirs [] (:paths opdsp.shared/*settings*))
+(defn allowedDirs [] (:paths opdsp.shared/*userSettings*))
 
 (defn userIsAllowed [input]
   (println "userIsAllowed=" input)
-  (let [settings
-        (opdsp.shared/loadSettings (:username input))
+  (let [userSettings
+        (opdsp.shared/loadUserSettings (:username input))
         ;davaccess/*settings*
-        allowed (= (:password settings) (:password input))]
-    (println "Settings=" settings)
-    (println "passwrd=" (:password settings) (:password input))
+        allowed (= (-> userSettings :catalog :password) (:password input))]
+    (println "Settings=" userSettings)
     (println "allowed=" allowed)
     allowed))
 

@@ -48,7 +48,7 @@
                               get (doto (PROPFIND uri)
                                     (.addHeader "Depth" "1")
                                     (.addHeader "Accept", "*/*")
-                                    (.addHeader "Authorization" (str "OAuth " (key)))
+                                    (.addHeader "Authorization" (str "OAuth " (yandex-key)))
                                     )
                               ]
                           (.execute client get (BasicResponseHandler.)))))
@@ -59,7 +59,7 @@
                               url (URI. (webdavserver :scheme) nil (webdavserver :host) (webdavserver :port) (str "/" path) nil nil)
                               get (doto (HttpGet. url)
                                     (.addHeader "Accept", "*/*")
-                                    (.addHeader "Authorization" (str "OAuth " (key)))
+                                    (.addHeader "Authorization" (str "OAuth " (yandex-key)))
                                     )
                               ]
                           (.execute client get (doto (proxy [ResponseHandler] []
