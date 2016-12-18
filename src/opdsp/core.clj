@@ -6,6 +6,7 @@
             )
   (:require [opdsp.davaccess :as davaccess]
             [clojure.string :as string]
+            [clojure.walk :refer [keywordize-keys]]
             [compojure.core :refer :all]
             [compojure.route :as route]
             [cemerick.friend :as friend]
@@ -17,29 +18,21 @@
             [opdsp.shared :refer :all]
             [opdsp.dirrender :refer :all]
             [clojure.data.json :as json]
-            [clj-yaml.core :as yaml])
+            [clj-yaml.core :as yaml]
+            [ring.util.response :as response])
   (:import (java.io File)))
 
 
-(defn opds-authenticate [handler]
+(defn opds-catalog-authenticate [handler]
   (friend/authenticate handler {
-                        :allow-anon?   false
-                        :unauthenticated-handler #(workflows/http-basic-deny "opds-p" %)
-                        :credential-fn (fn [input]
-                                         (let [allowed (userIsAllowed input)]
-                                           (if allowed {:identity (:username input)} nil)))
-                        :workflows     [(workflows/http-basic)]
-                        }))
+                                :allow-anon?             false
+                                :unauthenticated-handler #(workflows/http-basic-deny "opds-p" %)
+                                :credential-fn           (fn [input]
+                                                           (let [allowed (userIsAllowed input)]
+                                                             (if allowed {:identity (:username input)} nil)))
+                                :workflows               [(workflows/http-basic)]
+                                }))
 
-(defn main-authenticate [handler]
-  (friend/authenticate handler {
-                        ;:allow-anon?             false
-                        ;:unauthenticated-handler #(workflows/ "opds-p" %)
-                        :credential-fn           (fn [input]
-                                                   (let [allowed (userIsAllowed input)]
-                                                     (if allowed {:identity (:username input)} nil)))
-                        :workflows               [(workflows/http-basic) (workflows/interactive-form)]
-                        }))
 
 
 (defn process-yandex-response [request] (let [code (get (:query-params request) "code")
@@ -56,12 +49,11 @@
                                                                        {:query-params     {:format      "json"
                                                                                            :oauth_token accessTocken}
                                                                         :as               :json
-                                                                        :throw-exceptions false})]
-                                              (println "accessTocken=" accessTocken "oauthList=" authList)
-                                              {:oauth oaResponse
-                                               :info  authList
-                                               }
-                                              )
+                                                                        :throw-exceptions false})
+                                                  info (json/read-str (:body authList))
+                                                  ]
+                                              (keywordize-keys {:oauth oaResponse
+                                                                :info  info}))
                                             (throw (Exception. (str "Yandex responed with " oaresp)))
                                             )
                                           ))
@@ -69,10 +61,22 @@
 
 (defroutes handler-inner
            (GET "/login" [] (pages/login))
-           (GET "/oauth" request (let [yandexData (process-yandex-response request)]
-                                   {:body (str yandexData)}))
-           (GET "/dir/:path{.*}" [path :as request] (opds-authenticate (fn [_] (dir request path (:context request)))))
-           (GET "/file/:path{.*}" [path :as request] (opds-authenticate (fn [_] (file request path (:context request)))))
+           (GET "/logout" request (-> (response/redirect (str (:context request) "/"))
+                                      (assoc :session nil)))
+           (GET "/oauth" request (let [yandexData (process-yandex-response request)
+                                       session {request :session}
+                                       login (-> yandexData :info :login)]
+                                   (opdsp.shared/updateUserSettings login {:key (-> yandexData :oauth :access_token)})
+                                   (-> (response/redirect (str (:context request) "/manage"))
+                                       (assoc-in [:session :login] login))))
+           (GET "/" request
+             (if-let [login (-> request :session :login)]
+               (response/redirect (str (:context request) "/manage"))
+               (response/redirect (str (:context request) "/login"))
+               )
+             )
+           (GET "/dir/:path{.*}" [path :as request] (opds-catalog-authenticate (fn [_] (dir request path (:context request)))))
+           (GET "/file/:path{.*}" [path :as request] (opds-catalog-authenticate (fn [_] (file request path (:context request)))))
            (route/not-found "<h1>Page not found</h1>"))
 
 

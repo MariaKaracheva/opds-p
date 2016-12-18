@@ -30,27 +30,29 @@
                       [:body
                        [:div.container
                         [:form.form-signin
-                         [:h2.form-signin-heading "Please sign in"]
+                         ;[:h2.form-signin-heading "Please sign in"]
                          [:div [:a {:href (str "https://oauth.yandex.ru/authorize?response_type=code&client_id=" (:id (app-settings :yandex-app)))}
                                 "Войти через Яндекс"]]
-                         [:label.sr-only {:for "inputEmail"} "Email address"]
-                         [:input#inputEmail.form-control
-                          {:autofocus   "autofocus",
-                           :required    "required",
-                           :placeholder "Email address",
-                           :type        "email"}]
-                         [:label.sr-only {:for "inputPassword"} "Password"]
-                         [:input#inputPassword.form-control
-                          {:required    "required",
-                           :placeholder "Password",
-                           :type        "password"}]
-                         [:div.checkbox
-                          [:label
-                           [:input {:value "remember-me", :type "checkbox"}]
-                           " Remember me\n          "]]
-                         [:button.btn.btn-lg.btn-primary.btn-block
-                          {:type "submit"}
-                          "Sign in"]]]
+                         ;[:label.sr-only {:for "inputEmail"} "Email address"]
+                         ;[:input#inputEmail.form-control
+                         ; {:autofocus   "autofocus",
+                         ;  :required    "required",
+                         ;  :placeholder "Email address",
+                         ;  :type        "email"}]
+                         ;[:label.sr-only {:for "inputPassword"} "Password"]
+                         ;[:input#inputPassword.form-control
+                         ; {:required    "required",
+                         ;  :placeholder "Password",
+                         ;  :type        "password"}]
+                         ;[:div.checkbox
+                         ; [:label
+                         ;  [:input {:value "remember-me", :type "checkbox"}]
+                         ;  " Remember me\n          "]]
+                         ;[:button.btn.btn-lg.btn-primary.btn-block
+                         ; {:type "submit"}
+                         ; "Sign in"]
+                         ]
+                         ]
                        " "
                        "<!-- /container -->"
                        "<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->"

@@ -6,7 +6,8 @@
     [monger.operators :refer :all]
     [lock-key.core :refer [decrypt decrypt-as-str decrypt-from-base64]]
     )
-  (:import (java.io File)))
+  (:import (java.io File)
+           (java.util Map)))
 
 (def settingsPath (clojure.string/join "/" [ (java.lang.System/getenv "HOME") ".opds-p"]))
 
@@ -21,6 +22,8 @@
                       (mg/get-db conn "opds-p"))))
 
 (defn loadUserSettings [^String user] (mc/find-one-as-map @mongodb "userSettings" {:login user}))
+
+(defn updateUserSettings [^String user ^Map data] (mc/upsert @mongodb "userSettings" {:login user} {$set data}))
 
 (def ^:dynamic *userSettings*)
 
