@@ -1,5 +1,6 @@
 (ns opdsp.pages
   (:require [hiccup.core :refer :all]
+            [hiccup.form :refer :all]
             [hiccup.page :refer [include-css include-js]]
             [opdsp.shared :refer :all]))
 
@@ -49,50 +50,46 @@
                      ))
 
 (defn manage [{userSettings :userSettings dirs :rootdirs}]
-  (html
-    [:html
-     {:lang "en"}
-     (head "Opds settings")
-     [:body
-      [:div.container
-       [:div.panel.panel-default
-        [:div.panel-heading [:h1.panel-title "Opds settings"]]
-        [:div.panel-body
-         [:form {:method "post" :action "save"}
-          [:div.panel.panel-default
-           [:div.panel-heading [:h2.panel-title "Opds login"]]
-           [:div.panel-body
-            [:div.alert.alert-info "Логин и пароль, которые будут использованы для доступа к opds каталогу по адресу "]
-            [:div.form-group
-             [:div.row
-              [:label.col-sm-2.col-form-label {:for "login"} "Логин"]
-              [:div.col-sm-10
-               [:input#login.form-control
-                {:placeholder "login", :name "catalog-login" :type "text"}]]]
-             [:div.row
-              [:label.col-sm-2.col-form-label
-               {:for "inputPassword"} "Password"]
-              [:div.col-sm-10
-               [:input#inputPassword.form-control
-                {:placeholder "Password", :name "catalog-password" :type "password"}]]]
-             ]]
-           ]
-          [:div.panel.panel-default
-           [:div.panel-heading [:h2.panel-title "Доступные папки каталога"]]
-           [:div.panel-body
-            [:div.alert.alert-info "Укажите папке, которые будут доступны через opds-каталог"]
-            [:table.table
-             [:thead [:tr [:th {:width 30} "Доступ"] [:th "Папка"]]]
-             [:tbody
-              (for [dir dirs] [:tr [:td [:input {:value dir, :name "alloweddir", :type "checkbox"}]] [:td dir]])
-              ;[:tr [:td [:input {:value "second_checkbox", :name "cbox2", :type "checkbox"}]] [:td "Doe"]]
-              ;[:tr [:td "Mary"] [:td "Moe"]]
-              ;[:tr [:td "July"] [:td "Dooley"]]
-              ]]]]
-
-          [:div.form-group.row
-           [:div.offset-sm-2.col-sm-10
-            [:button.btn.btn-primary {:type "submit"} "Сохранить"]]]]]
-        ]] (body-footer)]]
-
-    ))
+  (let [enabledPaths (set (-> userSettings :catalog :paths))]
+    (html
+      [:html
+       {:lang "en"}
+       (head "Opds settings")
+       [:body
+        [:div.container
+         [:div.panel.panel-default
+          [:div.panel-heading [:h1.panel-title "Opds settings"]]
+          [:div.panel-body
+           [:form {:method "post" :action "save"}
+            [:div.panel.panel-default
+             [:div.panel-heading [:h2.panel-title "Opds login"]]
+             [:div.panel-body
+              [:div.alert.alert-info "Логин и пароль, которые будут использованы для доступа к opds каталогу по адресу "]
+              [:div.form-group
+               [:div.row
+                [:label.col-sm-2.col-form-label {:for "login"} "Логин"]
+                [:div.col-sm-10
+                 [:input#login.form-control
+                  {:placeholder "login", :name "catalog-login" :type "text"}]]]
+               [:div.row
+                [:label.col-sm-2.col-form-label
+                 {:for "inputPassword"} "Password"]
+                [:div.col-sm-10
+                 [:input#inputPassword.form-control
+                  {:placeholder "Password", :name "catalog-password" :type "password"}]]]
+               ]]
+             ]
+            [:div.panel.panel-default
+             [:div.panel-heading [:h2.panel-title "Доступные папки каталога"]]
+             [:div.panel-body
+              [:div.alert.alert-info "Укажите папке, которые будут доступны через opds-каталог"]
+              [:table.table
+               [:thead [:tr [:th {:width 30} "Доступ"] [:th "Папка"]]]
+               [:tbody
+                (for [dir dirs]
+                  [:tr [:td (check-box {} "alloweddir" (contains? enabledPaths dir) dir)] [:td dir]])]]]]
+            [:div.form-group.row
+             [:div.offset-sm-2.col-sm-10
+              [:button.btn.btn-primary {:type "submit"} "Сохранить"]]]]]
+          ]] (body-footer)]]
+      )))
