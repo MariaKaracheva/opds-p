@@ -69,6 +69,16 @@
                                    (opdsp.shared/updateUserSettings login {:key (-> yandexData :oauth :access_token)})
                                    (-> (response/redirect (str (:context request) "/manage"))
                                        (assoc-in [:session :login] login))))
+           (GET "/manage" [] (pages/manage {:rootdirs ["aaa" "bbb" "ccc"]}))
+           (POST "/save" request
+             (if-let [login (-> request :session :login)]
+               (do (println "save-form-params = " (:form-params request))
+                   (opdsp.shared/updateUserSettings login {:catalog
+                                                           {:login        (get (:form-params request) "catalog-login")
+                                                            :password     (get (:form-params request) "catalog-password")
+                                                            :allowedpaths (flatten [(get (:form-params request) "alloweddir")])}})
+                   (response/redirect (str (:context request) "/manage")))
+               (response/redirect (str (:context request) "/login"))))
            (GET "/" request
              (if-let [login (-> request :session :login)]
                (response/redirect (str (:context request) "/manage"))
@@ -102,8 +112,7 @@
 (def watcher (atom nil))
 
 (defn init []
-  (println "init")
-  )
+  (println "init"))
 (defn destroy [] (println "destroy") (hawk/stop! @watcher))
 
 ;(def standalone-app
