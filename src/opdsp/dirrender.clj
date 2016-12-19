@@ -10,15 +10,6 @@
 
 (defn allowedDirs [] (-> opdsp.shared/*userSettings* :catalog :paths))
 
-(defn userIsAllowed [input]
-  (println "userIsAllowed=" input)
-  (let [userSettings
-        (opdsp.shared/loadUserSettings (:username input))
-        ;davaccess/*settings*
-        allowed (= (-> userSettings :catalog :auth :password) (:password input))]
-    (println "Settings=" userSettings)
-    (println "allowed=" allowed)
-    allowed))
 
 (defn removePrifix [str prefix] (if (string/starts-with? str prefix) (subs str (count prefix)) str))
 
@@ -42,27 +33,20 @@
         )
       ))
 
+(defn dirEntriesList [path] (binding [opds/*pathPrefix* ""]
+                              (->> (davaccess/loadList path)
+                                   (xp/$x "*//response" )
+                                   (map respEntry ))))
+
 (defn dir [request path context]
   (do (println "uri " (:uri request) path context request)
       {:status  200
        :headers {"Content-Type" "text/xml; charset=utf-8"}
-       ;:body    (concat "Hello Worldff3" (:query-string request) (davaccess/loadList ""))
-       ;:body    (let [davxml (slurp "yandex.xml") parsed (xp/$x "*//prop" davxml)]
-       ;           (string/join "\n" (->> parsed
-       ;                                  (map #(:node %))
-       ;                                  (map #(xp/$x:text "./displayname" %))
-       ;                                  ;(map #(apply :text %))
-       ;                                  )))
-       :body    (binding [opds/pathPrefix ""]
-                  (let [
-                        ;davxml (slurp "yandex.xml")
-                        davxml (davaccess/loadList path)
-                        parsed (xp/$x "*//response" davxml)]
-                    ;(spit "testsamples/dav-0.xml" davxml)
-                    (binding [opds/pathPrefix context]
-                      (xml/emit-str (opds/documentTagData (->> parsed
-                                                               (map respEntry)
-                                                               (filter #(allowedPath (% :href)))
-                                                               ))))))
+       :body (let [entries (dirEntriesList path)]
+               (binding [opds/*pathPrefix* context]
+                 (xml/emit-str (opds/documentTagData (->> entries
+                                                          (filter #(allowedPath (% :href)))
+                                                          ))))
+               )
        }))
 

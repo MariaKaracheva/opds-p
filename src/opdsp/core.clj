@@ -28,8 +28,8 @@
                                 :allow-anon?             false
                                 :unauthenticated-handler #(workflows/http-basic-deny "opds-p" %)
                                 :credential-fn           (fn [input]
-                                                           (let [allowed (userIsAllowed input)]
-                                                             (if allowed {:identity (:username input)} nil)))
+                                                           (let [settings (opdsp.shared/loadUserSettingsByCatalogAuth (:username input) (:password input))]
+                                                             (if settings {:identity (:login settings)} nil)))
                                 :workflows               [(workflows/http-basic)]
                                 }))
 
@@ -59,6 +59,15 @@
                                           ))
 
 
+(defn logged-in [handler] (fn [request] (if-let [login (-> request :session :login)]
+                                          (binding [opdsp.shared/*userSettings* (opdsp.shared/loadUserSettings login)]
+                                            (handler request))
+                                          (response/redirect (str (:context request) "/login")))))
+(defn wrap-settings [handler]
+  (fn [request]
+    (binding [opdsp.shared/*userSettings* (opdsp.shared/loadUserSettings (:identity (friend/current-authentication request)))]
+      (handler request))))
+
 (defroutes handler-inner
            (GET "/login" [] (pages/login))
            (GET "/logout" request (-> (response/redirect (str (:context request) "/"))
@@ -69,36 +78,40 @@
                                    (opdsp.shared/updateUserSettings login {:key (-> yandexData :oauth :access_token)})
                                    (-> (response/redirect (str (:context request) "/manage"))
                                        (assoc-in [:session :login] login))))
-           (GET "/manage" [] (pages/manage {:rootdirs ["aaa" "bbb" "ccc"]}))
+           (GET "/manage" request
+             (logged-in (fn [_] (let [login (-> request :session :login)
+                                      userSettings opdsp.shared/*userSettings*
+                                      entries (->> (dirEntriesList "") (map #(removePrifix (% :href) "/")))]
+                                  (pages/manage {:rootdirs entries :userSettings userSettings})))))
            (POST "/save" request
-             (if-let [login (-> request :session :login)]
-               (do (println "save-form-params = " (:form-params request))
-                   (opdsp.shared/updateUserSettings login {:catalog
-                                                           {:login        (get (:form-params request) "catalog-login")
-                                                            :password     (get (:form-params request) "catalog-password")
-                                                            :allowedpaths (flatten [(get (:form-params request) "alloweddir")])}})
-                   (response/redirect (str (:context request) "/manage")))
-               (response/redirect (str (:context request) "/login"))))
+             (logged-in (fn [_] (let [login (-> request :session :login)]
+                                  (opdsp.shared/updateUserSettings login {:catalog
+                                                                          {:auth  {:login    (get (:form-params request) "catalog-login")
+                                                                                   :password (get (:form-params request) "catalog-password")}
+                                                                           :paths (flatten [(get (:form-params request) "alloweddir")])}})
+                                  (response/redirect (str (:context request) "/manage"))
+                                  ))))
            (GET "/" request
              (if-let [login (-> request :session :login)]
                (response/redirect (str (:context request) "/manage"))
                (response/redirect (str (:context request) "/login"))
                )
              )
-           (GET "/dir/:path{.*}" [path :as request] (opds-catalog-authenticate (fn [_] (dir request path (:context request)))))
-           (GET "/file/:path{.*}" [path :as request] (opds-catalog-authenticate (fn [_] (file request path (:context request)))))
+           (GET "/dir/:path{.*}" [path :as request] (-> (fn [_] (dir request path (:context request)))
+                                                        (wrap-settings)
+                                                        (opds-catalog-authenticate)
+                                                        ))
+           (GET "/file/:path{.*}" [path :as request] (-> (fn [_] (file request path (:context request)))
+                                                         (wrap-settings)
+                                                         (opds-catalog-authenticate)
+                                                         ))
            (route/not-found "<h1>Page not found</h1>"))
 
 
 
-(defn wrap-settings [handler]
-  (fn [request]
-    (binding [opdsp.shared/*userSettings* (opdsp.shared/loadUserSettings (:username (friend/current-authentication request)))]
-      (handler request))))
 
 (def opds-p-handler
   (-> handler-inner
-      (wrap-settings)
       (wrap-session)
       (wrap-params)
       (wrap-resource "public")

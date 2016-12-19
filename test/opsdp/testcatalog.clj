@@ -25,27 +25,33 @@
                           {:port 2999 :join? false})]
     (with-redefs [opdsp.davaccess/webdavserver {
                                                 :scheme "http"
-                                                :host  "localhost"
-                                                :port 2999
+                                                :host   "localhost"
+                                                :port   2999
                                                 }] (f))
     (.stop server)
     ))
 
 (defn mock-settings [f]
-  (with-redefs [
-                opdsp.shared/loadUserSettings (fn [_] {
-                                                       :key   "l6eKwQI+M7alHj5IJVf74uh2SiWHVbfKhjylgrYix0k=",
-                                                       :catalog  {
-                                                                  :auth {
-                                                                         :login    "aaa",
-                                                                         :password "ttt",
-                                                                         }
+  (let [testEntity {
+                    :key     "aaa+ttt",
+                    :login   "aaa"
+                    :catalog {
+                              :auth  {
+                                      :login    "aaa",
+                                      :password "ttt",
+                                      }
 
-                                                                  :paths ["books", "technicalBooks"]
-                                                                  }
-                                                       })
-                ]
-    (f)))
+                              :paths ["books", "technicalBooks"]
+                              }
+                    }]
+    (with-redefs [
+                  opdsp.shared/loadUserSettings (fn [_] testEntity)
+                  opdsp.shared/loadUserSettingsByCatalogAuth
+                  (fn [login password] (if (and (= login (-> testEntity :catalog :auth :login))
+                                                (= password (-> testEntity :catalog :auth :password))
+                                                ) testEntity))
+                  ]
+      (f))))
 
 (defn opds-p-server [f]
   (println "start")

@@ -21,12 +21,16 @@
 (def mongodb (delay (let [conn (mg/connect)]
                       (mg/get-db conn "opds-p"))))
 
-(defn loadUserSettings [^String user] (mc/find-one-as-map @mongodb "userSettings" {:login user}))
+(defn loadUserSettings [^String user]
+  {:pre [(some? user)]}
+  (mc/find-one-as-map @mongodb "userSettings" {:login user}))
+
+(defn loadUserSettingsByCatalogAuth [^String login ^String password]
+  {:pre [(some? login)]}
+  (mc/find-one-as-map @mongodb "userSettings" {:catalog.auth.login login :catalog.auth.password password}))
 
 (defn updateUserSettings [^String user ^Map data] (mc/upsert @mongodb "userSettings" {:login user} {$set data}))
 
 (def ^:dynamic *userSettings*)
 
-(defn yandex-key [] (let [settingsKey (:key *userSettings*)]
-               (decrypt-from-base64 settingsKey "9qPBq1kFkOfPy5w9")
-               ))
+(defn yandex-key [] {:pre (some? *userSettings*)} (:key *userSettings*))
