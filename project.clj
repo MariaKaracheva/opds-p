@@ -3,7 +3,7 @@
 (defproject opdsp "1.0.0-SNAPSHOT"
   :description "FIXME: write"
   :dependencies [[org.clojure/clojure "1.8.0"]
-                 [ring/ring-core "1.4.0"]
+                 [ring/ring-core "1.5.0"]
                  [ring/ring-defaults "0.2.0"]
                  [org.apache.httpcomponents/httpclient "4.5.2"]
                  [lock-key "1.4.1"]
@@ -27,7 +27,7 @@
          :auto-refresh? true
          :reload-paths ["src/"]}
   :profiles {
-             :uberjar {:ring {:handler opdsp.core/handler}}
+             :uberjar {:ring {:handler opdsp.core/opds-p-handler}}
              :test {
                     :dependencies [
                                    [ring/ring-jetty-adapter "1.4.0"]

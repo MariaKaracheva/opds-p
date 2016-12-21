@@ -20,8 +20,21 @@
             [clojure.data.json :as json]
             [clj-yaml.core :as yaml]
             [ring.util.response :as response])
-  (:import (java.io File)))
+  (:import (java.io File)
+           (java.net URL)))
 
+; a workaround for https://github.com/ring-clojure/ring/issues/184 taken from http://stackoverflow.com/a/35173453/5201186
+(defmethod ring.util.response/resource-data :vfs
+  [^URL url]
+  (println "ring.util.response/resource-data =" url)
+  (let [conn (.openConnection url)
+        vfile (.getContent conn)]
+    (when-not (.isDirectory vfile)
+      {:content        (.getInputStream conn)
+       :content-length (.getContentLength conn)
+       :last-modified  (-> vfile
+                           .getPhysicalFile
+                           ring.util.io/last-modified-date)})))
 
 (defn opds-catalog-authenticate [handler]
   (friend/authenticate handler {
@@ -69,6 +82,7 @@
       (handler request))))
 
 (defroutes handler-inner
+           (route/resources "/")
            (GET "/login" [] (pages/login))
            (GET "/logout" request (-> (response/redirect (str (:context request) "/"))
                                       (assoc :session nil)))
@@ -110,11 +124,11 @@
 
 
 
-(def opds-p-handler
+
+  (def opds-p-handler
   (-> handler-inner
       (wrap-session)
       (wrap-params)
-      (wrap-resource "public")
       ; ...required Ring middlewares ...
       ))
 
