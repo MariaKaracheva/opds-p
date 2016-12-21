@@ -2,6 +2,7 @@
   (:require [hiccup.core :refer :all]
             [hiccup.form :refer :all]
             [hiccup.page :refer [include-css include-js]]
+            [ring.util.codec :refer [form-decode]]
             [opdsp.shared :refer :all]))
 
 
@@ -50,11 +51,14 @@
                      ))
 
 (defn manage [{userSettings :userSettings dirs :rootdirs}]
-  (let [enabledPaths (set (-> userSettings :catalog :paths))]
+  (let [enabledPaths (set (-> userSettings :catalog :paths))
+        sortedPaths (->> dirs
+                         (map (fn [dir] {:dir dir :enabled (contains? enabledPaths dir)}))
+                         (sort-by (fn [dir] [(not (:enabled dir))])))]
     (html
       [:html
        {:lang "en"}
-       (head "Opds settings")
+       (head "Opds settings" (include-css "css/manage.css"))
        [:body
         [:div.container
          [:div.panel.panel-default
@@ -83,11 +87,11 @@
              [:div.panel-heading [:h2.panel-title "Доступные папки каталога"]]
              [:div.panel-body
               [:div.alert.alert-info "Укажите папке, которые будут доступны через opds-каталог"]
-              [:table.table
-               [:thead [:tr [:th {:width 30} "Доступ"] [:th "Папка"]]]
+              [:table.table.dirlist
+               [:thead [:tr [:th.enabled-checkbox "Доступ"] [:th.folder-path "Папка"]]]
                [:tbody
-                (for [dir dirs]
-                  [:tr [:td (check-box {} "alloweddir" (contains? enabledPaths dir) dir)] [:td dir]])]]]]
+                (for [dir sortedPaths]
+                  [:tr [:td.enabled-checkbox (check-box {} "alloweddir" (:enabled dir) (:dir dir))] [:td.folder-path (form-decode (:dir dir))]])]]]]
             [:div.form-group.row
              [:div.offset-sm-2.col-sm-10
               [:button.btn.btn-primary {:type "submit"} "Сохранить"]]]]]

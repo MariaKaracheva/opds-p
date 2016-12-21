@@ -1,0 +1,48 @@
+.enabled-checkbox {
+    width: 100px;
+}
+
+.folder-path {
+    width: 600px;
+    max-width: 600px;
+    overflow: hidden;
+}
+
+table.dirlist thead {
+    display: block;
+}
+
+table.dirlist tbody {
+    display: block;
+    overflow: auto;
+    height: 400px;
+}
+
+/*table.dirlist {*/
+    /*height: 250px;*/
+    /*overflow-y: scroll;*/
+/*}*/
+
+/*.dirlist thead {*/
+    /*width: 97%;*/
+/*}*/
+/*.dirlist tbody {*/
+    /*height: 230px;*/
+    /*overflow-y: scroll;*/
+    /*!*width: 100%;*!*/
+    /*position: absolute;*/
+/*}*/
+
+/*.dirlist tbody {*/
+    /*display: table;*/
+/*}*/
+
+/*.dirlist thead, .dirlist tbody, .dirlist tr, .dirlist td, .dirlist th {*/
+    /*display: block;*/
+/*}*/
+
+/*.dirlist tbody td, .dirlist thead > tr> th {*/
+    /*float: left;*/
+    /*border-bottom-width: 0;*/
+/*}*/
+
