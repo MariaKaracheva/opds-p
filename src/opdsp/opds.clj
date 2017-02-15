@@ -14,6 +14,7 @@
                             ".mobi" "application/x-mobipocket-ebook"
                             ".pdf" "application/pdf"
                             ".djvu" "image/vnd.djvu"
+                            ".fb2" "application/fb2+zip"
                             "application/octet-stream"))
 
 (defn entryTagData [entry]

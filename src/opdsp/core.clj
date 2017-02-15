@@ -96,7 +96,7 @@
              (logged-in (fn [_] (let [login (-> request :session :login)
                                       userSettings opdsp.shared/*userSettings*
                                       entries (->> (dirEntriesList "") (map #(removePrifix (% :href) "/")))]
-                                  (pages/manage {:rootdirs entries :userSettings userSettings})))))
+                                  (pages/manage {:rootdirs entries :userSettings userSettings :request request})))))
            (POST "/save" request
              (logged-in (fn [_] (let [login (-> request :session :login)]
                                   (opdsp.shared/updateUserSettings login {:catalog

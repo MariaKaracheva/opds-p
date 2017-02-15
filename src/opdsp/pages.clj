@@ -50,7 +50,7 @@
 
                      ))
 
-(defn manage [{userSettings :userSettings dirs :rootdirs}]
+(defn manage [{userSettings :userSettings dirs :rootdirs request :request}]
   (let [enabledPaths (set (-> userSettings :catalog :paths))
         sortedPaths (->> dirs
                          (map (fn [dir] {:dir dir :enabled (contains? enabledPaths dir)}))
@@ -68,7 +68,7 @@
             [:div.panel.panel-default
              [:div.panel-heading [:h2.panel-title "Opds login"]]
              [:div.panel-body
-              [:div.alert.alert-info "Логин и пароль, которые будут использованы для доступа к opds каталогу по адресу "]
+              [:div.alert.alert-info "Логин и пароль, которые будут использованы для доступа к opds каталогу по адресу " (str (get (request :headers) "host") "/opds-p/dir/")]
               [:div.form-group
                [:div.row
                 [:label.col-sm-2.col-form-label {:for "login"} "Логин"]
