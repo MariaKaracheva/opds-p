@@ -13,10 +13,12 @@
 
 (defn webdav-mock [f]
   (let [server (run-jetty (routes
-                            (PROPFIND "/*" request
-                                      (println "request=" request)
-                                      (assert (= "OAuth aaa+ttt" (-> request :headers (get "authorization"))))
-                                      (slurp "testsamples/dav-root.xml"))
+                            (PROPFIND "/:path{.*}" [path :as request]
+                              (println "path=" path "request=" request)
+                              (assert (= "OAuth aaa+ttt" (-> request :headers (get "authorization"))))
+                              (case path
+                                "books/" (slurp "testsamples/dav-books.xml")
+                                (slurp "testsamples/dav-root.xml")))
                             (GET "/*" request
                               (println "request=" request)
                               "dummy pdf file"
@@ -99,4 +101,11 @@
     (is (= "" (:body response)))
     )
   )
+
+(deftest listBooks
+  (let [response (client/get "http://localhost:3001/opds-p/dir/books/"
+                             {:basic-auth "aaa:ttt" :throw-exceptions false})]
+    (is (= 200 (:status response)))
+    (is (= (slurp "testsamples/opds-books.xml") (:body response)))
+    ))
 

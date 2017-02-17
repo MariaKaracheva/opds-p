@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<d:multistatus xmlns:d="DAV:">
+    <d:response>
+        <d:href>/books/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Wed, 11 Jun 2014 17:59:20 GMT</d:getlastmodified>
+                <d:displayname>books</d:displayname>
+                <d:creationdate>2014-06-11T17:59:20Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/Philip%20K.%20Dick%20Collection%20-%20EPUB%20MOBI/</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype>
+                    <d:collection/>
+                </d:resourcetype>
+                <d:getlastmodified>Sun, 10 Jul 2016 19:27:58 GMT</d:getlastmodified>
+                <d:displayname>Philip K. Dick Collection - EPUB MOBI</d:displayname>
+                <d:creationdate>2016-07-10T19:27:58Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/5_principov_myshleniya.epub</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Sat, 26 Dec 2015 19:32:21 GMT</d:getlastmodified>
+                <d:getetag>5a5989763c1a87b974c04a518df56e7d</d:getetag>
+                <d:getcontenttype>application/epub+zip</d:getcontenttype>
+                <d:getcontentlength>225348</d:getcontentlength>
+                <d:displayname>5_principov_myshleniya.epub</d:displayname>
+                <d:creationdate>2015-12-26T19:32:21Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/5_principov_myshleniya.mobi</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Sat, 26 Dec 2015 19:32:22 GMT</d:getlastmodified>
+                <d:getetag>ec5b98dc4d98796f6ead27274d8859f2</d:getetag>
+                <d:getcontenttype>application/x-mobipocket-ebook</d:getcontenttype>
+                <d:getcontentlength>590733</d:getcontentlength>
+                <d:displayname>5_principov_myshleniya.mobi</d:displayname>
+                <d:creationdate>2015-12-26T19:32:22Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/5_principov_myshleniya.pdf</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Sat, 26 Dec 2015 19:32:21 GMT</d:getlastmodified>
+                <d:getetag>bfa48506f30500ee315232fbb00d6a3a</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+                <d:getcontentlength>2237669</d:getcontentlength>
+                <d:displayname>5_principov_myshleniya.pdf</d:displayname>
+                <d:creationdate>2015-12-26T19:32:21Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/9780521801386ws.pdf</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Sat, 02 Apr 2016 19:45:59 GMT</d:getlastmodified>
+                <d:getetag>a250c83ccb22cde6023ac346d71cc9d9</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+                <d:getcontentlength>157519</d:getcontentlength>
+                <d:displayname>9780521801386ws.pdf</d:displayname>
+                <d:creationdate>2016-04-02T19:45:59Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/Bit_nachalnikom.epub</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Tue, 23 Feb 2016 18:43:26 GMT</d:getlastmodified>
+                <d:getetag>91d0cd2a3a94993871fc4aa7ae3f9a9a</d:getetag>
+                <d:getcontenttype>application/epub+zip</d:getcontenttype>
+                <d:getcontentlength>1234841</d:getcontentlength>
+                <d:displayname>Bit_nachalnikom.epub</d:displayname>
+                <d:creationdate>2016-02-23T18:43:26Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/Bit_nachalnikom.pdf</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Tue, 23 Feb 2016 18:43:26 GMT</d:getlastmodified>
+                <d:getetag>9bb9c2aff4819f6471875c4137f8cd74</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+                <d:getcontentlength>1421647</d:getcontentlength>
+                <d:displayname>Bit_nachalnikom.pdf</d:displayname>
+                <d:creationdate>2016-02-23T18:43:26Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/Introverti.epub</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Sat, 26 Dec 2015 19:32:22 GMT</d:getlastmodified>
+                <d:getetag>ef07310e4999fc3df64a40c30b9c0409</d:getetag>
+                <d:getcontenttype>application/epub+zip</d:getcontenttype>
+                <d:getcontentlength>1781563</d:getcontentlength>
+                <d:displayname>Introverti.epub</d:displayname>
+                <d:creationdate>2015-12-26T19:32:22Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/Introverti.pdf</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Sat, 26 Dec 2015 19:32:27 GMT</d:getlastmodified>
+                <d:getetag>8ce65cadf285ff8fd556f2256dae27cf</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+                <d:getcontentlength>2900314</d:getcontentlength>
+                <d:displayname>Introverti.pdf</d:displayname>
+                <d:creationdate>2015-12-26T19:32:27Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+    <d:response>
+        <d:href>/books/Mindsight.pdf</d:href>
+        <d:propstat>
+            <d:status>HTTP/1.1 200 OK</d:status>
+            <d:prop>
+                <d:resourcetype/>
+                <d:getlastmodified>Tue, 23 Feb 2016 18:43:26 GMT</d:getlastmodified>
+                <d:getetag>702573e72ed4d72a15e3bd873c30d96a</d:getetag>
+                <d:getcontenttype>application/pdf</d:getcontenttype>
+                <d:getcontentlength>2677604</d:getcontentlength>
+                <d:displayname>Mindsight.pdf</d:displayname>
+                <d:creationdate>2016-02-23T18:43:26Z</d:creationdate>
+            </d:prop>
+        </d:propstat>
+    </d:response>
+</d:multistatus>
