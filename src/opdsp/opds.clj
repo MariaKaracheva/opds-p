@@ -56,7 +56,6 @@
 (defn documentTagData [entries]
   (
     element "feed"
-
             {
              :xmlns            "http://www.w3.org/2005/Atom"
              :xmlns:dcterms    "http://purl.org/dc/terms/"
@@ -69,9 +68,7 @@
                     (->> entries
                          (map #(merge % (nameAndType %)))
                          (group-by #(% :displayname))
-                         (map entryTagData))
-
-                    )
-            ))
+                         (sort-by #(identity [(-> % (second) (first) (:collection) (not)) (first %)]))
+                         (map entryTagData)))))
 
 
