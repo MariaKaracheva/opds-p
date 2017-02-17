@@ -9,32 +9,49 @@
 (def dirprefix "dir")
 (def fileprefix "file")
 
-(defn fileType [filename] (condp #(ends-with? (lower-case %2) %1) filename
-                            ".epub" "application/epub+zip"
-                            ".mobi" "application/x-mobipocket-ebook"
-                            ".pdf" "application/pdf"
-                            ".djvu" "image/vnd.djvu"
-                            ".fb2" "application/fb2+zip"
-                            "application/octet-stream"))
+(def supportedMimes {".epub" "application/epub+zip"
+                     ".mobi" "application/x-mobipocket-ebook"
+                     ".pdf"  "application/pdf"
+                     ".djvu" "image/vnd.djvu"
+                     ".fb2"  "application/fb2+zip"})
 
-(defn entryTagData [entry]
+(defn fileType [filename] (let [lowercased (lower-case filename)
+                                ext (->> supportedMimes keys
+                                         (filter #(ends-with? lowercased %))
+                                         (first))]
+                            (or (some->> ext (get supportedMimes)) "application/octet-stream")
+                            ))
+
+(defn nameAndType [{filename :displayname}] (let [lowercased (lower-case filename)
+                                                  ext (->> supportedMimes keys
+                                                           (filter #(ends-with? lowercased %))
+                                                           (first))]
+                                              (if ext
+                                                {:displayname (subs filename 0 (- (count filename) (count ext)))
+                                                 :type        (get supportedMimes ext)}
+                                                {:displayname filename
+                                                 :type        "application/octet-stream"})
+                                              ))
+
+(defn entryTagData [[name entries]]
   (element "entry" {}
 
-           (element "title" {} (entry :displayname))
-           (element "content" {:type "html"})
-           (element "link" (if (entry :collection)
-                             {
-                              :type "application/atom+xml; profile=opds-catalog; kind=acquisition"
-                              :kind "acquisition"
-                              :rel  "subsection"
-                              :href (str *pathPrefix* "/" dirprefix (entry :href))
-                              }
-                             {:type (fileType (entry :displayname))
-                              :kind "acquisition"
-                              :rel  "http://opds-spec.org/acquisition"
-                              :href (str *pathPrefix* "/" fileprefix (entry :href))
-                              }
-                             ))))
+           (concat
+             [(element "title" {} name)
+              (element "content" {:type "html"})]
+             (map (fn [entry] (element "link" (if (entry :collection)
+                                                {
+                                                 :type "application/atom+xml; profile=opds-catalog; kind=acquisition"
+                                                 :kind "acquisition"
+                                                 :rel  "subsection"
+                                                 :href (str *pathPrefix* "/" dirprefix (entry :href))
+                                                 }
+                                                {:type (entry :type)
+                                                 :kind "acquisition"
+                                                 :rel  "http://opds-spec.org/acquisition"
+                                                 :href (str *pathPrefix* "/" fileprefix (entry :href))
+                                                 }
+                                                ))) entries))))
 
 (defn documentTagData [entries]
   (
@@ -49,7 +66,11 @@
              :xmlns:opensearch "http://a9.com/-/spec/opensearch/1.1/"
              }
             (concat [(element "title" {} "Books")]
-                    (map entryTagData entries)
+                    (->> entries
+                         (map #(merge % (nameAndType %)))
+                         (group-by #(% :displayname))
+                         (map entryTagData))
+
                     )
             ))
 

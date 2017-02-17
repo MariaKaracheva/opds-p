@@ -23,15 +23,13 @@
    })
 
 (defn file [request path context]
-  (do (println "uri " (:uri request) path request)
-      (if (allowedPath path)
-        {:status  200
-         :headers {}
-         :body    (io/input-stream (davaccess/loadFile path))}
-        {:status 404
-         :body   "Not Found"}
-        )
-      ))
+  (if (allowedPath path)
+    {:status  200
+     :headers {}
+     :body    (io/input-stream (davaccess/loadFile path))}
+    {:status 404
+     :body   "Not Found"}
+    ))
 
 (defn dirEntriesList [path] (binding [opds/*pathPrefix* ""]
                               (->> (davaccess/loadList path)
@@ -39,14 +37,12 @@
                                    (map respEntry ))))
 
 (defn dir [request path context]
-  (do (println "uri " (:uri request) path context request)
-      {:status  200
-       :headers {"Content-Type" "text/xml; charset=utf-8"}
-       :body (let [entries (dirEntriesList path)]
-               (binding [opds/*pathPrefix* context]
-                 (xml/emit-str (opds/documentTagData (->> entries
-                                                          (filter #(allowedPath (% :href)))
-                                                          ))))
-               )
-       }))
+  {:status  200
+   :headers {"Content-Type" "text/xml; charset=utf-8"}
+   :body    (let [entries (dirEntriesList path)]
+              (binding [opds/*pathPrefix* context]
+                (xml/emit-str (opds/documentTagData (->> entries
+                                                         (filter #(allowedPath (% :href)))
+                                                         ))))
+              )})
 

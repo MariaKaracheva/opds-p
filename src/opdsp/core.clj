@@ -12,7 +12,6 @@
             [cemerick.friend :as friend]
             (cemerick.friend [workflows :as workflows]
                              [credentials :as creds])
-            [hawk.core :as hawk]
             [opdsp.pages :as pages]
             [clj-http.client :as client]
             [opdsp.shared :refer :all]
@@ -26,7 +25,6 @@
 ; a workaround for https://github.com/ring-clojure/ring/issues/184 taken from http://stackoverflow.com/a/35173453/5201186
 (defmethod ring.util.response/resource-data :vfs
   [^URL url]
-  (println "ring.util.response/resource-data =" url)
   (let [conn (.openConnection url)
         vfile (.getContent conn)]
     (when-not (.isDirectory vfile)
@@ -136,11 +134,6 @@
            (context "/opds-p" req opds-p-handler)
            (route/not-found "Not Found"))
 
-(def watcher (atom nil))
-
-(defn init []
-  (println "init"))
-(defn destroy [] (println "destroy") (hawk/stop! @watcher))
 
 ;(def standalone-app
 ;  (wrap-defaults standalone-routes site-defaults))
