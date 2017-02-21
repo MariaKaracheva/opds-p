@@ -38,7 +38,10 @@
 
 (defn dir [request path context]
   {:status  200
-   :headers {"Content-Type" "text/xml; charset=utf-8"}
+   :headers {"Content-Type"  "text/xml; charset=utf-8"
+             "Cache-Control" "no-cache, no-store, must-revalidate"
+             "Pragma"        "no-cache"
+             "Expires"       "0"}
    :body    (let [entries (dirEntriesList path)]
               (binding [opds/*pathPrefix* context]
                 (xml/emit-str (opds/documentTagData (->> entries

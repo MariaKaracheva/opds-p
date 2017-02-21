@@ -82,6 +82,9 @@
   (let [response (client/get "http://localhost:3001/opds-p/dir/" {:basic-auth "aaa:ttt" :throw-exceptions false})]
     (println "response=" response)
     (is (= 200 (:status response)))
+    (is (= "no-cache, no-store, must-revalidate" (-> response :headers (get "Cache-Control"))))
+    (is (= "no-cache" (-> response :headers (get "Pragma"))))
+    (is (= "0" (-> response :headers (get "Expires"))))
     (is (= "<?xml version=\"1.0\" encoding=\"UTF-8\"?><feed xmlns=\"http://www.w3.org/2005/Atom\" xmlns:dcterms=\"http://purl.org/dc/terms/\" xmlns:pse=\"http://vaemendis.net/opds-pse/ns\" xmlns:opds=\"http://opds-spec.org/2010/catalog\" xml:lang=\"en\" xmlns:opensearch=\"http://a9.com/-/spec/opensearch/1.1/\"><title>Books</title><entry><title>books</title><content type=\"html\"></content><link type=\"application/atom+xml; profile=opds-catalog; kind=acquisition\" kind=\"acquisition\" rel=\"subsection\" href=\"/opds-p/dir/books/\"></link></entry><entry><title>technicalBooks</title><content type=\"html\"></content><link type=\"application/atom+xml; profile=opds-catalog; kind=acquisition\" kind=\"acquisition\" rel=\"subsection\" href=\"/opds-p/dir/technicalBooks/\"></link></entry></feed>"
            (:body response))))
   )
