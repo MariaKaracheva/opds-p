@@ -1,6 +1,8 @@
 (ns opdsp.opds
   (:require [clojure.data.xml :refer [element]])
-  (:require [clojure.string :refer [ends-with? lower-case]]))
+  (:require [clojure.string :refer [ends-with? lower-case]]
+            [clojure.string :as str])
+  (:import (java.util.regex Pattern)))
 
 
 
@@ -33,12 +35,28 @@
                                                  :type        "application/octet-stream"})
                                               ))
 
+(defn- split-keep [^String str ^Pattern re]
+  (let [m (.matcher re str)
+        fnext (fn fnext [pos]
+                (cond
+                  (.find m) (cons (subs str pos (.end m)) (lazy-seq (fnext (.end m))))
+                  (= pos (count str)) nil
+                  :else [(subs str pos (count str))]))]
+    (fnext 0)))
+
+(defn- author-and-title [name]
+  (let [sp (split-keep name #"[\W_]+")]
+    (cond (< (count sp) 3) [nil name]
+          :else [(str/join (take 2 sp)) (str/join (drop 2 sp))])))
+
 (defn entryTagData [[name entries]]
   (element "entry" {}
-
            (concat
-             [(element "title" {} name)
-              (element "content" {:type "html"})]
+             (let [[author title] (author-and-title name)]
+               (filter some?
+                       [(element "title" {} name)
+                        (when author () (element "author" {} [(element "name" {} author)]))
+                        (element "content" {:type "html"})]))
              (map (fn [entry] (element "link" (if (entry :collection)
                                                 {
                                                  :type "application/atom+xml; profile=opds-catalog; kind=acquisition"
