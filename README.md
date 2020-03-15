@@ -26,3 +26,11 @@ or
 **Build war**
 
     lein ring uberwar opds-p.war
+    
+## Development with REPL
+
+```clojure
+(require '[opdsp.core :refer :all])
+(require '[ring.adapter.jetty :as rj]) (require '[opdsp.core :refer :all])
+(future (rj/run-jetty standalone-routes {:port 3000}))
+```
